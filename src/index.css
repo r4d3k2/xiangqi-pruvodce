@@ -227,16 +227,16 @@ button:focus-visible {
 }
 
 /* Pill — rounded button used throughout app.
-   Playfair Display has high-contrast strokes that look broken on capital
-   letters ("O", "Č", "Š") at small sizes — pills explicitly use Crimson
-   Text at semibold for clean rendering. */
+   High-contrast serif fonts (Playfair Display, Crimson Text) rendered the
+   capital "O" as a distorted oval at 15px. Switched to Noto Serif which
+   has more even stroke contrast, plus explicit antialiasing. */
 .pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: 'Crimson Text', Georgia, serif;
-  font-weight: 600;
+  font-family: 'Noto Serif', Georgia, 'Times New Roman', serif;
+  font-weight: 500;
   font-size: 15px;
   line-height: 1;
   padding: 8px 14px;
@@ -247,6 +247,8 @@ button:focus-visible {
   transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
     transform 0.18s ease;
   white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .pill:hover {
@@ -275,10 +277,10 @@ button:focus-visible {
   cursor: not-allowed;
 }
 
-/* Tabs */
+/* Tabs — same reasoning as pills: Noto Serif renders cleaner at 15px. */
 .tab {
   flex: 1 1 0;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: 'Noto Serif', Georgia, 'Times New Roman', serif;
   font-weight: 600;
   font-size: 15px;
   padding: 10px 8px;
@@ -287,6 +289,8 @@ button:focus-visible {
   color: var(--text-muted);
   border-bottom: 2px solid transparent;
   transition: color 0.18s ease, border-color 0.18s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .tab.is-active {
