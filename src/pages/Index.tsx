@@ -10,10 +10,13 @@ import {
   type Side,
 } from "../lib/xiangqi";
 import {
+  applyTheme,
   loadProgress,
+  loadTheme,
   recordResult,
   starsFromMistakes,
   type ProgressMap,
+  type ThemeId,
 } from "../lib/storage";
 import { recommend } from "../lib/recommend";
 import { XiangqiBoard, type PieceDisplay } from "../components/xiangqi/XiangqiBoard";
@@ -21,6 +24,10 @@ import { Pill } from "../components/xiangqi/Pill";
 import { MoveToken } from "../components/xiangqi/MoveToken";
 import { Stars } from "../components/xiangqi/Stars";
 import { ResultCard } from "../components/xiangqi/ResultCard";
+import { ThemeSwitcher } from "../components/xiangqi/ThemeSwitcher";
+import { PieceCard } from "../components/xiangqi/PieceCard";
+import { PieceQuiz } from "../components/xiangqi/PieceQuiz";
+import { PIECE_TYPES } from "../data/pieces";
 
 type Mode = "study" | "practice" | "pieces";
 type Tab = "strategy" | "history" | "move";
@@ -44,6 +51,12 @@ export function Index() {
   const [hintLevel, setHintLevel] = useState<0 | 1 | 2>(0);
   const [done, setDone] = useState(false);
   const [progress, setProgress] = useState<ProgressMap>(() => loadProgress());
+
+  // Theme
+  const [theme, setTheme] = useState<ThemeId>(() => loadTheme());
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   // Cancellable scheduled opponent move
   const oppTimer = useRef<number | null>(null);
@@ -248,14 +261,17 @@ export function Index() {
       }}
     >
       {/* HEADER */}
-      <header style={{ textAlign: "center", marginBottom: 20 }}>
+      <header style={{ textAlign: "center", marginBottom: 16 }}>
         <div className="app-title-zh">象 棋 · XIANGQI</div>
         <h1
           className="app-title-main"
-          style={{ margin: "6px 0 0", fontSize: 22 }}
+          style={{ margin: "6px 0 12px", fontSize: 22 }}
         >
           Průvodce zahájením
         </h1>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <ThemeSwitcher theme={theme} onChange={setTheme} />
+        </div>
       </header>
 
       {/* MODE PILLS */}
@@ -280,8 +296,6 @@ export function Index() {
         <Pill
           active={mode === "pieces"}
           onClick={() => setMode("pieces")}
-          disabled
-          title="Bude dostupné ve Fázi 3"
         >
           <span aria-hidden>🀄</span> Figury
         </Pill>
@@ -300,6 +314,54 @@ export function Index() {
           </Pill>
         </div>
       )}
+
+      {/* ============= PIECES MODE ============= */}
+      {mode === "pieces" && (
+        <>
+          <section
+            style={{
+              marginBottom: 18,
+              textAlign: "center",
+              color: "var(--text-soft)",
+              fontSize: 15,
+              lineHeight: 1.5,
+            }}
+          >
+            Sedm typů figur čínských šachů. Klepni si nahoře na téma, otoč
+            si desku, nebo si vyzkoušej kvíz dole.
+          </section>
+
+          <section
+            style={{
+              display: "grid",
+              gap: 12,
+              gridTemplateColumns: "1fr",
+              marginBottom: 20,
+            }}
+          >
+            {PIECE_TYPES.map((t) => (
+              <PieceCard key={t} type={t} />
+            ))}
+          </section>
+
+          <h2
+            className="font-display"
+            style={{
+              textAlign: "center",
+              fontSize: 20,
+              margin: "12px 0 12px",
+              color: "var(--text)",
+            }}
+          >
+            Kvíz · Poznej figuru
+          </h2>
+          <PieceQuiz />
+        </>
+      )}
+
+      {/* ============= STUDY / PRACTICE MODE ============= */}
+      {mode !== "pieces" && (
+      <>
 
       {/* OPENING + VARIANT SELECTOR */}
       <section style={{ marginBottom: 14 }}>
@@ -798,6 +860,9 @@ export function Index() {
         </section>
       )}
 
+      </>
+      )}
+
       <footer
         style={{
           textAlign: "center",
@@ -806,7 +871,9 @@ export function Index() {
           marginTop: 28,
         }}
       >
-        Fáze 2 · {opening.name} · {variant.name}
+        {mode === "pieces"
+          ? "Xiangqi · 7 figur, 1 kvíz"
+          : `${opening.name} · ${variant.name}`}
       </footer>
     </div>
   );

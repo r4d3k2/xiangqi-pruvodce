@@ -56,3 +56,41 @@ export function recordResult(variantId: string, mistakes: number): VariantProgre
   saveProgress(map);
   return next;
 }
+
+// --- Theme persistence ---
+export type ThemeId =
+  | "wooden-night"
+  | "wooden-day"
+  | "modern-light"
+  | "midnight-blue";
+
+const THEME_KEY = "xiangqi-theme";
+export const DEFAULT_THEME: ThemeId = "wooden-night";
+
+export function loadTheme(): ThemeId {
+  if (typeof localStorage === "undefined") return DEFAULT_THEME;
+  const raw = localStorage.getItem(THEME_KEY);
+  if (
+    raw === "wooden-night" ||
+    raw === "wooden-day" ||
+    raw === "modern-light" ||
+    raw === "midnight-blue"
+  ) {
+    return raw;
+  }
+  return DEFAULT_THEME;
+}
+
+export function saveTheme(theme: ThemeId): void {
+  if (typeof localStorage === "undefined") return;
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // ignore
+  }
+}
+
+export function applyTheme(theme: ThemeId): void {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-theme", theme);
+}
