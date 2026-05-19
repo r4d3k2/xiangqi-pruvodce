@@ -796,21 +796,17 @@ export function Index() {
                         height: 44,
                         flexShrink: 0,
                         borderRadius: "50%",
-                        background:
-                          moveSide(moveIndex) === "red" ? "#5C0000" : "#0d1e0d",
-                        color:
-                          moveSide(moveIndex) === "red" ? "#FFF0CC" : "#88C088",
+                        background: `var(--piece-${moveSide(moveIndex)}-inner)`,
+                        color: `var(--piece-${moveSide(moveIndex)}-text)`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontFamily: "Noto Serif, Georgia, serif",
-                        fontWeight: 700,
+                        fontFamily:
+                          '"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif',
+                        fontWeight: 900,
                         fontSize: 22,
-                        border:
-                          "2px solid " +
-                          (moveSide(moveIndex) === "red"
-                            ? "#7A0000"
-                            : "#162A16"),
+                        letterSpacing: "-0.5px",
+                        border: `2px solid var(--piece-${moveSide(moveIndex)}-outer)`,
                       }}
                     >
                       {(() => {

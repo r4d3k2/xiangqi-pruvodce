@@ -25,8 +25,11 @@ const H = PAD * 2 + (ROWS - 1) * CELL; // 468
 const RIVER_TOP = PAD + 4 * CELL;
 const RIVER_BOT = PAD + 5 * CELL;
 
-const PIECE_OUTER_R = 19;
-const PIECE_INNER_R = 16;
+const PIECE_OUTER_R = 20;
+const PIECE_INNER_R = 17;
+const PIECE_RING_R = 15.5;
+const PIECE_FONT_FAMILY =
+  '"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif';
 
 function intersection(row: number, col: number, flipped: boolean) {
   const r = flipped ? ROWS - 1 - row : row;
@@ -41,10 +44,9 @@ function intersection(row: number, col: number, flipped: boolean) {
 function CornerTicks({ x, y }: { x: number; y: number }) {
   const off = 4;
   const len = 5;
-  const stroke = "#2b1d0c";
   const sw = 1.2;
   return (
-    <g stroke={stroke} strokeWidth={sw} strokeLinecap="round">
+    <g stroke="var(--board-line)" strokeWidth={sw} strokeLinecap="round">
       {/* top-left bracket */}
       <line x1={x - off} y1={y - off - len} x2={x - off} y2={y - off} />
       <line x1={x - off - len} y1={y - off} x2={x - off} y2={y - off} />
@@ -123,28 +125,21 @@ export function XiangqiBoard({
         role="img"
         aria-label="Xiangqi deska"
       >
-        {/* Background gradient */}
+        {/* Defs: theme-adaptive board gradient + piece drop shadow */}
         <defs>
           <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#C88018" />
-            <stop offset="100%" stopColor="#8A5810" />
+            <stop offset="0%" stopColor="var(--board-grad-1)" />
+            <stop offset="100%" stopColor="var(--board-grad-2)" />
           </linearGradient>
-          <radialGradient id="redOuter" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#9E1414" />
-            <stop offset="100%" stopColor="#5C0000" />
-          </radialGradient>
-          <radialGradient id="redInner" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#FFF8E1" />
-            <stop offset="100%" stopColor="#F3DDA9" />
-          </radialGradient>
-          <radialGradient id="blackOuter" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#1f2a1f" />
-            <stop offset="100%" stopColor="#08110a" />
-          </radialGradient>
-          <radialGradient id="blackInner" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#1f3a1f" />
-            <stop offset="100%" stopColor="#0d1e0d" />
-          </radialGradient>
+          <filter id="pieceShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow
+              dx="0"
+              dy="2"
+              stdDeviation="1.5"
+              floodColor="#000"
+              floodOpacity="0.4"
+            />
+          </filter>
         </defs>
 
         <rect x={0} y={0} width={W} height={H} rx={10} fill="url(#boardGrad)" />
@@ -159,7 +154,7 @@ export function XiangqiBoard({
               y1={y}
               x2={PAD + (COLS - 1) * CELL}
               y2={y}
-              stroke="#2b1d0c"
+              stroke="var(--board-line)"
               strokeWidth={1.4}
             />
           );
@@ -176,7 +171,7 @@ export function XiangqiBoard({
                 y1={PAD}
                 x2={x}
                 y2={PAD + (ROWS - 1) * CELL}
-                stroke="#2b1d0c"
+                stroke="var(--board-line)"
                 strokeWidth={1.4}
               />
             );
@@ -189,7 +184,7 @@ export function XiangqiBoard({
                 y1={PAD}
                 x2={x}
                 y2={RIVER_TOP}
-                stroke="#2b1d0c"
+                stroke="var(--board-line)"
                 strokeWidth={1.4}
               />
               <line
@@ -197,7 +192,7 @@ export function XiangqiBoard({
                 y1={RIVER_BOT}
                 x2={x}
                 y2={PAD + (ROWS - 1) * CELL}
-                stroke="#2b1d0c"
+                stroke="var(--board-line)"
                 strokeWidth={1.4}
               />
             </g>
@@ -205,7 +200,7 @@ export function XiangqiBoard({
         })}
 
         {/* Palace diagonals — black palace (top, rows 0-2 cols 3-5) */}
-        <g stroke="#2b1d0c" strokeWidth={1.2}>
+        <g stroke="var(--board-line)" strokeWidth={1.2}>
           <line
             x1={PAD + 3 * CELL}
             y1={PAD + 0 * CELL}
@@ -237,8 +232,8 @@ export function XiangqiBoard({
         <g
           fontFamily="Noto Serif, Georgia, serif"
           fontSize="20"
-          fill="#3a2410"
-          opacity={0.75}
+          fill="var(--board-river-text)"
+          opacity={0.85}
           letterSpacing="6"
         >
           <text
@@ -348,40 +343,40 @@ export function XiangqiBoard({
                         strokeWidth={2}
                       />
                     )}
-                    <circle
-                      r={PIECE_OUTER_R}
-                      fill={
-                        piece.side === "red"
-                          ? "url(#redOuter)"
-                          : "url(#blackOuter)"
-                      }
-                    />
-                    <circle
-                      r={PIECE_INNER_R}
-                      fill={
-                        piece.side === "red"
-                          ? "url(#redInner)"
-                          : "url(#blackInner)"
-                      }
-                      stroke={piece.side === "red" ? "#5C0000" : "#08110a"}
-                      strokeWidth={1}
-                    />
+                    <g filter="url(#pieceShadow)">
+                      <circle
+                        r={PIECE_OUTER_R}
+                        fill={`var(--piece-${piece.side}-outer)`}
+                      />
+                      <circle
+                        r={PIECE_INNER_R}
+                        fill={`var(--piece-${piece.side}-inner)`}
+                        stroke={`var(--piece-${piece.side}-outer)`}
+                        strokeWidth={1}
+                      />
+                      <circle
+                        r={PIECE_RING_R}
+                        fill="none"
+                        stroke={`var(--piece-${piece.side}-text)`}
+                        strokeOpacity={0.3}
+                        strokeWidth={1}
+                      />
+                    </g>
                     {pieceDisplay === "char" ? (
                       <text
                         textAnchor="middle"
                         dominantBaseline="central"
-                        fontFamily="Noto Serif, Georgia, serif"
-                        fontWeight={700}
-                        fontSize={20}
-                        fill={piece.side === "red" ? "#8B0000" : "#88C088"}
+                        fontFamily={PIECE_FONT_FAMILY}
+                        fontWeight={900}
+                        fontSize={19}
+                        letterSpacing="-0.5"
+                        fill={`var(--piece-${piece.side}-text)`}
                       >
                         {pieceChar(piece.type, piece.side)}
                       </text>
                     ) : (
                       <g
-                        style={{
-                          color: piece.side === "red" ? "#8B0000" : "#88C088",
-                        }}
+                        style={{ color: `var(--piece-${piece.side}-text)` }}
                         transform="translate(-11,-11)"
                       >
                         <PieceIcon type={piece.type} />
@@ -403,7 +398,7 @@ export function XiangqiBoard({
             textAnchor="middle"
             fontFamily="Noto Serif, Georgia, serif"
             fontSize={11}
-            fill="#3a2410"
+            fill="var(--board-label-text)"
           >
             {l}
           </text>
@@ -418,7 +413,7 @@ export function XiangqiBoard({
             textAnchor="middle"
             fontFamily="Noto Serif, Georgia, serif"
             fontSize={11}
-            fill="#3a2410"
+            fill="var(--board-label-text)"
           >
             {l}
           </text>

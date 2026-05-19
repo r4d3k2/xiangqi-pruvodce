@@ -164,41 +164,57 @@ export function PieceQuiz() {
             >
               Co je tato figura?
             </div>
-            <div
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: "50%",
-                margin: "0 auto",
-                background: q.side === "red" ? "#7A0000" : "#0D1A0D",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-              }}
+            <svg
+              width={84}
+              height={84}
+              viewBox="-42 -42 84 84"
+              style={{ display: "block", margin: "0 auto" }}
             >
-              <div
-                style={{
-                  width: 66,
-                  height: 66,
-                  borderRadius: "50%",
-                  background: q.side === "red" ? "#FFF0CC" : "#162A16",
-                  border:
-                    q.side === "red"
-                      ? "2px solid #7A0000"
-                      : "2px solid #0D1A0D",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontFamily: "Noto Serif, Georgia, serif",
-                  fontWeight: 700,
-                  fontSize: 36,
-                  color: q.side === "red" ? "#8B0000" : "#88C088",
-                }}
+              <defs>
+                <filter
+                  id="quizPieceShadow"
+                  x="-30%"
+                  y="-30%"
+                  width="160%"
+                  height="160%"
+                >
+                  <feDropShadow
+                    dx="0"
+                    dy="2"
+                    stdDeviation="2"
+                    floodColor="#000"
+                    floodOpacity="0.4"
+                  />
+                </filter>
+              </defs>
+              <g filter="url(#quizPieceShadow)">
+                <circle r={40} fill={`var(--piece-${q.side}-outer)`} />
+                <circle
+                  r={34}
+                  fill={`var(--piece-${q.side}-inner)`}
+                  stroke={`var(--piece-${q.side}-outer)`}
+                  strokeWidth={1.5}
+                />
+                <circle
+                  r={31}
+                  fill="none"
+                  stroke={`var(--piece-${q.side}-text)`}
+                  strokeOpacity={0.3}
+                  strokeWidth={1}
+                />
+              </g>
+              <text
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontFamily='"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif'
+                fontWeight={900}
+                fontSize={42}
+                letterSpacing={-1}
+                fill={`var(--piece-${q.side}-text)`}
               >
                 {pieceChar(q.answer, q.side)}
-              </div>
-            </div>
+              </text>
+            </svg>
           </>
         ) : (
           <>
@@ -265,9 +281,10 @@ export function PieceQuiz() {
                 fontFamily:
                   q.kind === "char-to-name"
                     ? "Crimson Text, Georgia, serif"
-                    : "Noto Serif, Georgia, serif",
-                fontWeight: 600,
-                fontSize: q.kind === "char-to-name" ? 16 : 22,
+                    : '"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif',
+                fontWeight: q.kind === "char-to-name" ? 600 : 900,
+                fontSize: q.kind === "char-to-name" ? 16 : 24,
+                letterSpacing: q.kind === "char-to-name" ? "normal" : "-0.5px",
                 transition: "all 0.18s ease",
               }}
             >

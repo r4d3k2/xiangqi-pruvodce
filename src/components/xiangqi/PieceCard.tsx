@@ -8,6 +8,9 @@ interface PieceCardProps {
 const CELL = 28;
 const PAD = 12;
 
+const PIECE_FONT_FAMILY =
+  '"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif';
+
 function StaticPiece({
   type,
   side,
@@ -19,27 +22,47 @@ function StaticPiece({
 }) {
   const r = size / 2;
   const inner = r - 3;
+  const ringR = r - 4.5;
   const info = PIECES[type];
   const text = side === "red" ? info.redChar : info.blackChar;
+  const shadowId = `staticPieceShadow-${size}`;
   return (
     <svg width={size} height={size} viewBox={`-${r} -${r} ${size} ${size}`}>
-      <circle
-        r={r - 1}
-        fill={side === "red" ? "#7A0000" : "#0D1A0D"}
-      />
-      <circle
-        r={inner}
-        fill={side === "red" ? "#FFF0CC" : "#162A16"}
-        stroke={side === "red" ? "#7A0000" : "#0D1A0D"}
-        strokeWidth={1}
-      />
+      <defs>
+        <filter id={shadowId} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0"
+            dy="2"
+            stdDeviation="1.5"
+            floodColor="#000"
+            floodOpacity="0.4"
+          />
+        </filter>
+      </defs>
+      <g filter={`url(#${shadowId})`}>
+        <circle r={r - 1} fill={`var(--piece-${side}-outer)`} />
+        <circle
+          r={inner}
+          fill={`var(--piece-${side}-inner)`}
+          stroke={`var(--piece-${side}-outer)`}
+          strokeWidth={1}
+        />
+        <circle
+          r={ringR}
+          fill="none"
+          stroke={`var(--piece-${side}-text)`}
+          strokeOpacity={0.3}
+          strokeWidth={1}
+        />
+      </g>
       <text
         textAnchor="middle"
         dominantBaseline="central"
-        fontFamily="Noto Serif, Georgia, serif"
-        fontWeight={700}
+        fontFamily={PIECE_FONT_FAMILY}
+        fontWeight={900}
         fontSize={size * 0.5}
-        fill={side === "red" ? "#8B0000" : "#88C088"}
+        letterSpacing="-0.5"
+        fill={`var(--piece-${side}-text)`}
       >
         {text}
       </text>
@@ -66,7 +89,13 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
       }}
       aria-hidden
     >
-      <rect x={0} y={0} width={w} height={h} rx={6} fill="#d49a44" />
+      <defs>
+        <linearGradient id="miniBoardGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--board-grad-1)" />
+          <stop offset="100%" stopColor="var(--board-grad-2)" />
+        </linearGradient>
+      </defs>
+      <rect x={0} y={0} width={w} height={h} rx={6} fill="url(#miniBoardGrad)" />
 
       {/* Horizontal lines */}
       {Array.from({ length: d.rows }, (_, r) => (
@@ -76,7 +105,7 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
           y1={PAD + r * CELL}
           x2={PAD + (d.cols - 1) * CELL}
           y2={PAD + r * CELL}
-          stroke="#2b1d0c"
+          stroke="var(--board-line)"
           strokeWidth={1}
         />
       ))}
@@ -88,7 +117,7 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
           y1={PAD}
           x2={PAD + c * CELL}
           y2={PAD + (d.rows - 1) * CELL}
-          stroke="#2b1d0c"
+          stroke="var(--board-line)"
           strokeWidth={1}
         />
       ))}
@@ -101,8 +130,8 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
             y={PAD + (d.river.afterRow + 0.5) * CELL - 4}
             width={(d.cols - 1) * CELL + 2}
             height={8}
-            fill="#f4e6c2"
-            opacity={0.6}
+            fill="var(--board-river-text)"
+            opacity={0.2}
           />
           <text
             x={w / 2}
@@ -110,8 +139,8 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
             textAnchor="middle"
             fontFamily="Noto Serif, Georgia, serif"
             fontSize={10}
-            fill="#3a2410"
-            opacity={0.75}
+            fill="var(--board-river-text)"
+            opacity={0.85}
           >
             楚 河 漢 界
           </text>
@@ -120,7 +149,7 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
 
       {/* Palace box + diagonals */}
       {d.palace && (
-        <g stroke="#2b1d0c" strokeWidth={1} fill="none">
+        <g stroke="var(--board-line)" strokeWidth={1} fill="none">
           <line
             x1={PAD + d.palace.col * CELL}
             y1={PAD + d.palace.row * CELL}
@@ -146,10 +175,10 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
             cx={x}
             cy={y}
             r={8}
-            fill="#0D1A0D"
+            fill="var(--piece-black-outer)"
             stroke="#000"
             strokeWidth={0.5}
-            opacity={0.55}
+            opacity={0.7}
           />
         );
       })}
@@ -165,27 +194,39 @@ function Diagram({ type }: { type: PieceInfo["type"] }) {
               y1={pieceY}
               x2={tx}
               y2={ty}
-              stroke="#7A0000"
+              stroke="var(--piece-red-outer)"
               strokeWidth={1.4}
               strokeDasharray="3 2"
               opacity={0.8}
             />
-            <circle cx={tx} cy={ty} r={5} fill="#7A0000" opacity={0.85} />
+            <circle
+              cx={tx}
+              cy={ty}
+              r={5}
+              fill="var(--piece-red-outer)"
+              opacity={0.85}
+            />
           </g>
         );
       })}
 
       {/* Piece itself */}
       <g transform={`translate(${pieceX}, ${pieceY})`}>
-        <circle r={11} fill="#7A0000" />
-        <circle r={9} fill="#FFF0CC" stroke="#7A0000" strokeWidth={1} />
+        <circle r={11} fill="var(--piece-red-outer)" />
+        <circle
+          r={9}
+          fill="var(--piece-red-inner)"
+          stroke="var(--piece-red-outer)"
+          strokeWidth={1}
+        />
         <text
           textAnchor="middle"
           dominantBaseline="central"
-          fontFamily="Noto Serif, Georgia, serif"
-          fontWeight={700}
+          fontFamily={PIECE_FONT_FAMILY}
+          fontWeight={900}
           fontSize={12}
-          fill="#8B0000"
+          letterSpacing="-0.5"
+          fill="var(--piece-red-text)"
         >
           {info.redChar}
         </text>
