@@ -226,13 +226,17 @@ button:focus-visible {
   background: var(--border-soft);
 }
 
-/* Pill — rounded button used throughout app */
+/* Pill — rounded button used throughout app.
+   Playfair Display has high-contrast strokes that look broken on capital
+   letters ("O", "Č", "Š") at small sizes — pills explicitly use Crimson
+   Text at semibold for clean rendering. */
 .pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   font-family: 'Crimson Text', Georgia, serif;
+  font-weight: 600;
   font-size: 15px;
   line-height: 1;
   padding: 8px 14px;
@@ -328,10 +332,13 @@ button:focus-visible {
   animation: xq-shake 0.35s ease;
 }
 
-/* Header heading */
+/* Header heading.
+   Playfair Display is reserved for large display sizes (>= 18px) — at
+   12px it has the same broken-O problem as the pills, so the eyebrow
+   uses Crimson Text. */
 .app-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 12px;
