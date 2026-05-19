@@ -66,6 +66,42 @@ export const OPENINGS: Opening[] = [
             comment:
               "Centrální pěšák se posouvá o jedno pole — mírný protiútok a boj o střed.",
           },
+          {
+            from: [6, 6],
+            to: [5, 6],
+            comment:
+              "Červený pěšák na lince g vyráží vpřed — otevírá pole pro pravého koně a posiluje křídlo.",
+          },
+          {
+            from: [3, 2],
+            to: [4, 2],
+            comment:
+              "Černý pěšák na lince c symetricky postupuje — drží rovnováhu a podporuje koně.",
+          },
+          {
+            from: [9, 8],
+            to: [7, 8],
+            comment:
+              "Druhý červený vůz se aktivuje na pravém křídle — oba vozy jsou nyní rozvinuté.",
+          },
+          {
+            from: [0, 0],
+            to: [0, 1],
+            comment:
+              "Černý vůz se posunuje na linku b, kde po odejití koně získává prostor.",
+          },
+          {
+            from: [9, 3],
+            to: [8, 4],
+            comment:
+              "Červený rádce vstupuje do paláce — generál má pevnější ochranu před útokem.",
+          },
+          {
+            from: [0, 2],
+            to: [2, 4],
+            comment:
+              "Černý slon do středu doplňuje obranu — formace 屏風象 (sloní zeď) je kompletní.",
+          },
         ],
       },
       {
@@ -108,6 +144,42 @@ export const OPENINGS: Opening[] = [
             to: [2, 2],
             comment:
               "Druhý černý kůň uzavírá zahájení — oboustranně napjatá, symetrická pozice.",
+          },
+          {
+            from: [9, 0],
+            to: [8, 0],
+            comment:
+              "Levý červený vůz vyjíždí o jedno pole — připravuje aktivaci na novou linii.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Černý vůz symetricky stoupá — souosá formace pokračuje na obou stranách.",
+          },
+          {
+            from: [6, 2],
+            to: [5, 2],
+            comment:
+              "Červený pěšák na lince c vyráží vpřed — otvírá si prostor pro rozvoj.",
+          },
+          {
+            from: [3, 6],
+            to: [4, 6],
+            comment:
+              "Černý pěšák symetricky postupuje na lince g — symetrie zůstává neporušena.",
+          },
+          {
+            from: [9, 3],
+            to: [8, 4],
+            comment:
+              "Červený rádce vstupuje do středu paláce — generál získává pevnou ochranu.",
+          },
+          {
+            from: [0, 5],
+            to: [1, 4],
+            comment:
+              "Černý rádce zrcadlově posiluje obranu paláce — souosá hra v plné rovnováze.",
           },
         ],
       },
@@ -161,6 +233,42 @@ export const OPENINGS: Opening[] = [
             comment:
               "Černý vůz reaguje okamžitě — symetrie zachována i na vozových liniích.",
           },
+          {
+            from: [6, 2],
+            to: [5, 2],
+            comment:
+              "Červený pěšák na lince c postupuje vpřed — podporuje koně a otvírá komunikační linku.",
+          },
+          {
+            from: [3, 2],
+            to: [4, 2],
+            comment:
+              "Černý pěšák symetricky odpovídá — vyrovnaná dvojkoňová formace pokračuje.",
+          },
+          {
+            from: [9, 0],
+            to: [8, 0],
+            comment:
+              "Levý červený vůz vyjíždí o jedno pole — připravuje boční manévry.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Levý černý vůz se aktivuje symetricky — pomalu se rozvíjí oba stran.",
+          },
+          {
+            from: [8, 0],
+            to: [8, 3],
+            comment:
+              "Červený vůz se přesouvá podél řady 2 na centrální linku — připraven k centrálním zásahům.",
+          },
+          {
+            from: [1, 0],
+            to: [1, 3],
+            comment:
+              "Černý vůz zrcadlově. Vyrovnaná, napjatě poziční hra plně rozvinutá.",
+          },
         ],
       },
       {
@@ -197,6 +305,42 @@ export const OPENINGS: Opening[] = [
             from: [0, 1],
             to: [2, 2],
             comment: "Druhý černý kůň — pevná, kompletní obrana obou stran.",
+          },
+          {
+            from: [6, 4],
+            to: [5, 4],
+            comment:
+              "Červený centrální pěšák vyráží vpřed — kontroluje střed a podporuje slona.",
+          },
+          {
+            from: [3, 4],
+            to: [4, 4],
+            comment:
+              "Symetrická centrální pěšáková odpověď — centrální boj v dynamické rovnováze.",
+          },
+          {
+            from: [9, 3],
+            to: [8, 4],
+            comment:
+              "Červený rádce vstupuje do paláce — generál má pevnou trojici obránců.",
+          },
+          {
+            from: [0, 3],
+            to: [1, 4],
+            comment:
+              "Černý rádce zrcadlově posiluje vlastní palác — obě obrany jsou pevné.",
+          },
+          {
+            from: [9, 8],
+            to: [8, 8],
+            comment:
+              "Pravý červený vůz vyjíždí o jedno pole — aktivace pravé linie pokračuje.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Černý vůz symetricky stoupá — kombinace kůň-slon drží stabilní obranu.",
           },
         ],
       },
@@ -248,6 +392,42 @@ export const OPENINGS: Opening[] = [
             to: [2, 2],
             comment: "Druhý černý kůň — plně rozvinuté zahájení obou stran.",
           },
+          {
+            from: [9, 7],
+            to: [7, 6],
+            comment:
+              "Druhý červený kůň se rozvíjí — všichni jezdci jsou v aktivním postavení za slony.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Černý pravý vůz aktivuje se na sloupci i — podpora obrany.",
+          },
+          {
+            from: [9, 8],
+            to: [8, 8],
+            comment:
+              "Pravý červený vůz vystupuje na řadu 2 — připravený k laterálním přesunům.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Černý levý vůz se symetricky aktivuje — pomalá, defenzivní hra pokračuje.",
+          },
+          {
+            from: [6, 4],
+            to: [5, 4],
+            comment:
+              "Centrální červený pěšák postupuje vpřed — slonová zeď se připravuje na centrální tlak.",
+          },
+          {
+            from: [3, 4],
+            to: [4, 4],
+            comment:
+              "Symetrický centrální tah. Pevná, klidná hra — typická pro slonovou strukturu.",
+          },
         ],
       },
       {
@@ -288,6 +468,42 @@ export const OPENINGS: Opening[] = [
             from: [0, 7],
             to: [2, 6],
             comment: "Černý kůň reaguje na hrozbu přeskočeného kanonu.",
+          },
+          {
+            from: [9, 1],
+            to: [7, 2],
+            comment:
+              "Levý červený kůň vstupuje do hry — kombinace slona, kanonu a koně tvoří útočný motiv.",
+          },
+          {
+            from: [0, 1],
+            to: [2, 2],
+            comment:
+              "Druhý černý kůň konečně vyvinul — obě strany mají kompletní jezdectvo.",
+          },
+          {
+            from: [9, 7],
+            to: [7, 6],
+            comment:
+              "Pravý červený kůň doplňuje obrannou síť za slony.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Černý levý vůz vyjíždí — připravuje boční manévry proti přeskočenému kanonu.",
+          },
+          {
+            from: [9, 8],
+            to: [8, 8],
+            comment:
+              "Pravý červený vůz aktivuje pravou linii — všechny figury jsou nyní vyvinuté.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Černý pravý vůz symetricky stoupá. Hra je rozvinutá, prostor pro střední hru.",
           },
         ],
       },
@@ -335,6 +551,42 @@ export const OPENINGS: Opening[] = [
             to: [2, 2],
             comment: "Druhý černý kůň — rozvoj obou stran je kompletní.",
           },
+          {
+            from: [9, 7],
+            to: [7, 6],
+            comment:
+              "Druhý červený kůň podporuje centrální kanon — útočná formace je v pohybu.",
+          },
+          {
+            from: [0, 0],
+            to: [0, 1],
+            comment:
+              "Černý vůz se přesouvá na linku b — připravuje horizontální přesuny.",
+          },
+          {
+            from: [9, 0],
+            to: [7, 0],
+            comment:
+              "Levý červený vůz se aktivuje na řadě 3 — podporuje krajního pěšáka.",
+          },
+          {
+            from: [0, 8],
+            to: [0, 7],
+            comment:
+              "Černý pravý vůz se posunuje, dělá místo pro rozvoj slona.",
+          },
+          {
+            from: [9, 8],
+            to: [8, 8],
+            comment:
+              "Pravý červený vůz vystupuje — všechny vozy jsou aktivované.",
+          },
+          {
+            from: [0, 2],
+            to: [2, 4],
+            comment:
+              "Černý slon zaujímá střed — palác má pevnou ochranu pro chystanou střední hru.",
+          },
         ],
       },
       {
@@ -368,6 +620,42 @@ export const OPENINGS: Opening[] = [
             to: [5, 7],
             comment:
               "Černý kanon skáče přes řeku! Aktivní protiútok — hra je napínavá.",
+          },
+          {
+            from: [9, 1],
+            to: [7, 2],
+            comment:
+              "Levý červený kůň se rozvíjí — posiluje vnitřní obranu před přeskočeným kanonem.",
+          },
+          {
+            from: [0, 1],
+            to: [2, 2],
+            comment:
+              "Druhý černý kůň konečně rozvinul — všichni jezdci v aktivním postavení.",
+          },
+          {
+            from: [9, 8],
+            to: [7, 8],
+            comment:
+              "Pravý červený vůz vystupuje na řadu 3 — připravený k boční operaci proti zaskočenému kanonu.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Levý černý vůz se aktivuje, podporuje obranu i případný útok.",
+          },
+          {
+            from: [6, 2],
+            to: [5, 2],
+            comment:
+              "Červený pěšák na lince c vyráží — krajní pěšák začíná tlačit.",
+          },
+          {
+            from: [3, 4],
+            to: [4, 4],
+            comment:
+              "Černý centrální pěšák oponuje, drží kontrolu středu.",
           },
         ],
       },
@@ -420,6 +708,42 @@ export const OPENINGS: Opening[] = [
             comment:
               "Centrální pěšák brzdí postup — vyrovnaná obranná odpověď.",
           },
+          {
+            from: [9, 1],
+            to: [7, 2],
+            comment:
+              "Levý červený kůň se rozvíjí — podpora vyzdvihnutého vozu.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Černý pravý vůz aktivuje pravé křídlo — vyrovnává útok červeného.",
+          },
+          {
+            from: [9, 8],
+            to: [8, 8],
+            comment:
+              "Pravý červený vůz vyjíždí na řadu 2 — symetrický rozvoj na obou stranách.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Černý levý vůz vystupuje, aktivní pomocná figura.",
+          },
+          {
+            from: [9, 7],
+            to: [7, 8],
+            comment:
+              "Druhý červený kůň se rozvíjí — všichni jezdci v aktivním postavení.",
+          },
+          {
+            from: [3, 6],
+            to: [4, 6],
+            comment:
+              "Černý pěšák na lince g postupuje — kontroluje rozvinuté červené koně.",
+          },
         ],
       },
       {
@@ -461,6 +785,42 @@ export const OPENINGS: Opening[] = [
             to: [4, 8],
             comment:
               "Pravý pěšák brzdí postup vozu — lokální obranná odpověď.",
+          },
+          {
+            from: [9, 7],
+            to: [7, 6],
+            comment:
+              "Druhý červený kůň se rozvíjí — koordinace s vozem a kanonem na pravém křídle.",
+          },
+          {
+            from: [3, 6],
+            to: [4, 6],
+            comment:
+              "Černý pěšák na lince g postupuje — kontroluje červeného koně.",
+          },
+          {
+            from: [9, 1],
+            to: [7, 2],
+            comment:
+              "Levý červený kůň vstupuje do hry — symetrické rozvinutí na obou křídlech.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Pravý černý vůz se aktivuje — odpovídá na červený rozvoj na pravé straně.",
+          },
+          {
+            from: [9, 0],
+            to: [8, 0],
+            comment:
+              "Levý červený vůz lift o jedno pole — všechny vozy jsou aktivované.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Černý vůz symetricky stoupá. Plně rozvinutá poziční hra obou stran.",
           },
         ],
       },
