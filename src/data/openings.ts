@@ -183,6 +183,87 @@ export const OPENINGS: Opening[] = [
           },
         ],
       },
+      {
+        id: "central-cannon-reverse-palace-horse",
+        name: "Protikanon s krytým vozem",
+        zh: "反宮馬",
+        strategy:
+          "Protikanon s krytým vozem (反宮馬 — „obrácený palácový kůň“) je houževnatá poziční odpověď na centrální kanon. Místo symetrické koňské zdi černý přesune pravý kanon na (2,5), kde kryje palácový bok, a teprve potom rozvíjí oba koně. Vzniká pevná, defenzivní formace s rozdělenou silou na obou křídlech — vůz na levém křídle je krytý kanonem a tvoří „protikanonový“ motiv.",
+        moves: [
+          {
+            from: [7, 7],
+            to: [7, 4],
+            comment:
+              "Červený kanon obsazuje střed — klasický centrální kanon, agresivní záměr.",
+          },
+          {
+            from: [2, 7],
+            to: [2, 5],
+            comment:
+              "Klíčový tah! Černý kanon se posunuje na (2,5) — kryje palácový bok a tvoří motiv „obráceného paláce“.",
+          },
+          {
+            from: [9, 7],
+            to: [7, 6],
+            comment:
+              "Červený kůň vstupuje do hry — standardní rozvoj na pravém křídle.",
+          },
+          {
+            from: [0, 1],
+            to: [2, 2],
+            comment:
+              "Černý levý kůň rozvinul — obrana se začíná formovat asymetricky.",
+          },
+          {
+            from: [9, 8],
+            to: [7, 8],
+            comment:
+              "Pravý červený vůz se aktivuje — útok na pravém křídle pokračuje.",
+          },
+          {
+            from: [0, 7],
+            to: [2, 6],
+            comment:
+              "Černý pravý kůň doplňuje obranu, ale narozdíl od štítu je formace asymetrická — palác je krytý kanonem na f8.",
+          },
+          {
+            from: [9, 1],
+            to: [7, 2],
+            comment:
+              "Druhý červený kůň vstupuje — všichni jezdci jsou nyní rozvinutí.",
+          },
+          {
+            from: [0, 8],
+            to: [1, 8],
+            comment:
+              "Pravý černý vůz lift — připravuje boční přesuny po vlastní řadě.",
+          },
+          {
+            from: [6, 2],
+            to: [5, 2],
+            comment:
+              "Červený pěšák na lince c vyráží vpřed — připravuje protitlak.",
+          },
+          {
+            from: [3, 2],
+            to: [4, 2],
+            comment:
+              "Symetrický černý pěšák — obě křídla se rozevírají.",
+          },
+          {
+            from: [9, 0],
+            to: [8, 0],
+            comment:
+              "Levý červený vůz lift — všechny vozy jsou připravené k bočním manévrům.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Černý levý vůz odpovídá. Pevná protikanonová struktura kompletní, hra plyne do střední fáze.",
+          },
+        ],
+      },
     ],
   },
   {
@@ -341,6 +422,87 @@ export const OPENINGS: Opening[] = [
             to: [1, 8],
             comment:
               "Černý vůz symetricky stoupá — kombinace kůň-slon drží stabilní obranu.",
+          },
+        ],
+      },
+      {
+        id: "horse-cannon-combo",
+        name: "Kůň s kanónem",
+        zh: "馬炮聯攻",
+        strategy:
+          "Kůň s kanónem (馬炮聯攻 — „spojený útok koně a kanonu“) je aktivní varianta koňské hry, ve které červený po prvním tahu koněm rychle přesune pravý kanon do středu. Vzniká koordinovaná hrozba: kůň, kanon a vůz spolu vytvářejí tlak na střed a pravé křídlo. Vhodné pro hráče, kteří chtějí útočnou hru s flexibilním rozvojem.",
+        moves: [
+          {
+            from: [9, 1],
+            to: [7, 2],
+            comment:
+              "Kůň zahajuje místo kanonu — flexibilní start bez okamžité hrozby.",
+          },
+          {
+            from: [0, 7],
+            to: [2, 6],
+            comment:
+              "Černý kůň odpovídá — standardní defenzivní rozvoj.",
+          },
+          {
+            from: [7, 7],
+            to: [7, 4],
+            comment:
+              "Klíčový tah! Pravý červený kanon se přesouvá do středu — kombinovaný útok s koněm.",
+          },
+          {
+            from: [0, 1],
+            to: [2, 2],
+            comment:
+              "Druhý černý kůň vstupuje do hry — formuje obranu před hrozbou centrálního kanonu.",
+          },
+          {
+            from: [9, 7],
+            to: [7, 6],
+            comment:
+              "Druhý červený kůň podporuje útok — všichni jezdci v aktivním postavení.",
+          },
+          {
+            from: [2, 7],
+            to: [5, 7],
+            comment:
+              "Aktivní protihrozba! Černý kanon skáče přes řeku na (5,7) — útočná demonstrace.",
+          },
+          {
+            from: [9, 8],
+            to: [7, 8],
+            comment:
+              "Pravý červený vůz vystupuje, hrozí přesunu proti přeskočenému kanonu.",
+          },
+          {
+            from: [5, 7],
+            to: [2, 7],
+            comment:
+              "Černý kanon se moudře vrací zpět — výpad byl spíše provokací než trvalou pozicí.",
+          },
+          {
+            from: [9, 0],
+            to: [7, 0],
+            comment:
+              "Levý červený vůz lift na řadu 3 — všechny figury aktivované.",
+          },
+          {
+            from: [0, 0],
+            to: [1, 0],
+            comment:
+              "Černý levý vůz se posunuje, podpora obrany.",
+          },
+          {
+            from: [6, 2],
+            to: [5, 2],
+            comment:
+              "Červený pěšák na lince c vyráží vpřed — připravuje boční tlak.",
+          },
+          {
+            from: [3, 2],
+            to: [4, 2],
+            comment:
+              "Symetrická pěšáková odpověď. Pozice je plně rozvinutá s aktivním červeným.",
           },
         ],
       },

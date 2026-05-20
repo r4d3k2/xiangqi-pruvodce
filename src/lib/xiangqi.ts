@@ -109,3 +109,72 @@ export function coordLabel(row: number, col: number): string {
   const rank = ROWS - row; // row 9 → 1, row 0 → 10
   return `${file}${rank}`;
 }
+
+// ============================================================
+// Piece tracing for animated rendering
+// ------------------------------------------------------------
+// A tracked piece carries a stable ID (derived from its initial
+// position) so React keys persist across moves; only the
+// transform changes, allowing CSS to animate the slide.
+// ============================================================
+
+export interface TrackedPiece {
+  id: string;
+  type: PieceType;
+  side: Side;
+  row: number;
+  col: number;
+}
+
+function initialTrace(): TrackedPiece[] {
+  const pieces: TrackedPiece[] = [];
+  const b = initialBoard();
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = b[r][c];
+      if (cell) {
+        pieces.push({
+          id: `${cell.side[0]}${cell.type}-${r}-${c}`,
+          type: cell.type,
+          side: cell.side,
+          row: r,
+          col: c,
+        });
+      }
+    }
+  }
+  return pieces;
+}
+
+export function pieceTraceUpTo(
+  moves: MoveDef[],
+  upToInclusive: number,
+): TrackedPiece[] {
+  const pieces = initialTrace();
+  const slice = upToInclusive < 0 ? [] : moves.slice(0, upToInclusive + 1);
+  for (const m of slice) {
+    const [fr, fc] = m.from;
+    const [tr, tc] = m.to;
+    // Remove any captured piece at the destination
+    const capIdx = pieces.findIndex((p) => p.row === tr && p.col === tc);
+    if (capIdx >= 0) pieces.splice(capIdx, 1);
+    // Move the piece (must be re-found because the splice above may have
+    // shifted indices)
+    const moving = pieces.find((p) => p.row === fr && p.col === fc);
+    if (moving) {
+      moving.row = tr;
+      moving.col = tc;
+    }
+  }
+  return pieces;
+}
+
+// Rebuild a Board grid (cells) from tracked pieces — useful when both
+// representations are needed (e.g. click detection still uses the grid).
+export function boardFromPieces(pieces: TrackedPiece[]): Board {
+  const b = emptyBoard();
+  for (const p of pieces) {
+    b[p.row][p.col] = { type: p.type, side: p.side };
+  }
+  return b;
+}

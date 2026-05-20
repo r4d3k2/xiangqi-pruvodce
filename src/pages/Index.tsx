@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { OPENINGS } from "../data/openings";
+import { GAMES } from "../data/games";
 import { PIECES, pieceChar } from "../data/pieces";
 import {
   applyMovesUpTo,
   initialBoard,
   moveLabel,
   moveSide,
+  pieceTraceUpTo,
   type Coord,
   type Side,
 } from "../lib/xiangqi";
@@ -29,7 +31,7 @@ import { PieceCard } from "../components/xiangqi/PieceCard";
 import { PieceQuiz } from "../components/xiangqi/PieceQuiz";
 import { PIECE_TYPES } from "../data/pieces";
 
-type Mode = "study" | "practice" | "pieces";
+type Mode = "study" | "practice" | "pieces" | "games";
 type Tab = "strategy" | "history" | "move";
 
 const OPPONENT_DELAY_MS = 700;
@@ -39,6 +41,7 @@ export function Index() {
   const [mode, setMode] = useState<Mode>("study");
   const [openingId, setOpeningId] = useState(OPENINGS[0].id);
   const [variantId, setVariantId] = useState(OPENINGS[0].variants[0].id);
+  const [gameId, setGameId] = useState(GAMES[0].id);
   const [moveIndex, setMoveIndex] = useState(-1);
   const [tab, setTab] = useState<Tab>("strategy");
   const [pieceDisplay, setPieceDisplay] = useState<PieceDisplay>("char");
@@ -71,19 +74,46 @@ export function Index() {
       opening.variants.find((v) => v.id === variantId) ?? opening.variants[0],
     [opening, variantId],
   );
+  const selectedGame = useMemo(
+    () => GAMES.find((g) => g.id === gameId) ?? GAMES[0],
+    [gameId],
+  );
+
+  // Unified move source — games mode uses game.moves, otherwise variant.moves.
+  const currentMoves = mode === "games" ? selectedGame.moves : variant.moves;
 
   const board = useMemo(() => {
     if (moveIndex < 0) return initialBoard();
-    return applyMovesUpTo(variant.moves, moveIndex);
-  }, [variant, moveIndex]);
+    return applyMovesUpTo(currentMoves, moveIndex);
+  }, [currentMoves, moveIndex]);
 
-  const currentMove = moveIndex >= 0 ? variant.moves[moveIndex] : null;
+  // Tracked pieces (stable IDs across moves) — feeds animated rendering.
+  const tracedPieces = useMemo(
+    () => pieceTraceUpTo(currentMoves, moveIndex),
+    [currentMoves, moveIndex],
+  );
+
+  // Animation flag: true for ±1 steps and auto-opponent moves; false for
+  // ⏮/⏭ jumps, variant changes, restarts, recommendation switches.
+  const [animate, setAnimate] = useState(true);
+  // Helper: change moveIndex and disable animation (snap, then restore).
+  const jumpMoveIndex = (idx: number) => {
+    setAnimate(false);
+    setMoveIndex(idx);
+    // Re-enable animation on the next render so subsequent ±1 steps animate.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setAnimate(true));
+    });
+  };
+
+  const currentMove = moveIndex >= 0 ? currentMoves[moveIndex] : null;
+  const showStudyHighlights = mode === "study" || mode === "games";
   const fromHighlight: Coord | null =
-    mode === "study" && currentMove
+    showStudyHighlights && currentMove
       ? { row: currentMove.from[0], col: currentMove.from[1] }
       : null;
   const toHighlight: Coord | null =
-    mode === "study" && currentMove
+    showStudyHighlights && currentMove
       ? { row: currentMove.to[0], col: currentMove.to[1] }
       : null;
 
@@ -93,12 +123,14 @@ export function Index() {
 
   // Next move to be played (after current moveIndex)
   const nextIdx = moveIndex + 1;
-  const nextMove = nextIdx < variant.moves.length ? variant.moves[nextIdx] : null;
+  const nextMove =
+    nextIdx < variant.moves.length ? variant.moves[nextIdx] : null;
+  // (nextMove is only used in practice mode against the active variant)
   const nextIsUser = nextMove ? moveSide(nextIdx) === userSide : false;
 
-  // Reset position whenever variant changes or mode changes
+  // Reset position whenever variant changes or mode changes (no animation).
   const resetRun = () => {
-    setMoveIndex(-1);
+    jumpMoveIndex(-1);
     setSelected(null);
     setError(null);
     setMistakes(0);
@@ -114,11 +146,11 @@ export function Index() {
     }
   };
 
-  // Reset state when variant/mode changes
+  // Reset state when variant / game / mode / flip changes
   useEffect(() => {
     resetRun();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant.id, mode, flipped]);
+  }, [variant.id, selectedGame.id, mode, flipped]);
 
   // Auto-play opponent moves in practice mode
   useEffect(() => {
@@ -234,7 +266,7 @@ export function Index() {
       ? mode === "practice" && nextIsUser
         ? `Hraje ${userSide === "red" ? "červený" : "černý"} — váš tah`
         : "Výchozí pozice"
-      : `Tah ${moveLabel(moveIndex)} · ${moveIndex + 1}/${variant.moves.length}`;
+      : `Tah ${moveLabel(moveIndex)} · ${moveIndex + 1}/${currentMoves.length}`;
 
   // Highlights for practice mode
   const practiceFromHL =
@@ -298,6 +330,9 @@ export function Index() {
           onClick={() => setMode("pieces")}
         >
           <span aria-hidden>🀄</span> Figury
+        </Pill>
+        <Pill active={mode === "games"} onClick={() => setMode("games")}>
+          <span aria-hidden>📜</span> Partie
         </Pill>
       </nav>
 
@@ -363,7 +398,75 @@ export function Index() {
       {mode !== "pieces" && (
       <>
 
-      {/* OPENING + VARIANT SELECTOR */}
+      {/* GAME SELECTOR (Partie mode) */}
+      {mode === "games" && (
+        <section
+          style={{
+            marginBottom: 16,
+            display: "grid",
+            gap: 8,
+            gridTemplateColumns: "1fr",
+          }}
+        >
+          {GAMES.map((g) => {
+            const active = g.id === selectedGame.id;
+            return (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => setGameId(g.id)}
+                className="surface"
+                style={{
+                  textAlign: "left",
+                  padding: "12px 14px",
+                  cursor: "pointer",
+                  border: active
+                    ? "1.5px solid var(--accent-border)"
+                    : "1px solid var(--border-soft)",
+                  background: active ? "var(--accent-bg)" : "var(--surface)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                }}
+              >
+                <div
+                  className="font-display"
+                  style={{ fontSize: 15, fontWeight: 600 }}
+                >
+                  {g.title}
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "var(--text-muted)",
+                    display: "flex",
+                    gap: 10,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span>
+                    {g.red} <span style={{ color: "var(--text-muted)" }}>(červený)</span>
+                  </span>
+                  <span>vs.</span>
+                  <span>
+                    {g.black}{" "}
+                    <span style={{ color: "var(--text-muted)" }}>(černý)</span>
+                  </span>
+                  {g.year > 0 && (
+                    <span className="font-mono">· {g.year}</span>
+                  )}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                  {g.event} · {g.moves.length} tahů
+                </div>
+              </button>
+            );
+          })}
+        </section>
+      )}
+
+      {/* OPENING + VARIANT SELECTOR (study/practice only) */}
+      {(mode === "study" || mode === "practice") && (
       <section style={{ marginBottom: 14 }}>
         <div
           style={{
@@ -435,6 +538,7 @@ export function Index() {
           })}
         </div>
       </section>
+      )}
 
       {/* PRACTICE HEADER STATUS */}
       {mode === "practice" && !done && (
@@ -463,7 +567,7 @@ export function Index() {
           <span>
             Tah:{" "}
             <span className="font-mono" style={{ color: "var(--text-soft)" }}>
-              {Math.max(0, moveIndex + 1)}/{variant.moves.length}
+              {Math.max(0, moveIndex + 1)}/{currentMoves.length}
             </span>
           </span>
           <span>
@@ -493,6 +597,8 @@ export function Index() {
       >
         <XiangqiBoard
           board={board}
+          pieces={tracedPieces}
+          animate={animate}
           flipped={flipped}
           pieceDisplay={pieceDisplay}
           fromHighlight={mode === "practice" ? practiceFromHL : fromHighlight}
@@ -504,8 +610,8 @@ export function Index() {
         />
       </section>
 
-      {/* NAVIGATION (study only) or HINT (practice only) */}
-      {mode === "study" ? (
+      {/* NAVIGATION (study/games) or HINT (practice only) */}
+      {mode !== "practice" ? (
         <section
           style={{
             display: "flex",
@@ -518,7 +624,7 @@ export function Index() {
         >
           <Pill
             square
-            onClick={() => setMoveIndex(-1)}
+            onClick={() => jumpMoveIndex(-1)}
             disabled={moveIndex < 0}
             title="Na začátek"
           >
@@ -526,7 +632,10 @@ export function Index() {
           </Pill>
           <Pill
             square
-            onClick={() => setMoveIndex((i) => Math.max(-1, i - 1))}
+            onClick={() => {
+              setAnimate(true);
+              setMoveIndex((i) => Math.max(-1, i - 1));
+            }}
             disabled={moveIndex < 0}
             title="Předchozí tah"
           >
@@ -549,18 +658,19 @@ export function Index() {
           </div>
           <Pill
             square
-            onClick={() =>
-              setMoveIndex((i) => Math.min(variant.moves.length - 1, i + 1))
-            }
-            disabled={moveIndex >= variant.moves.length - 1}
+            onClick={() => {
+              setAnimate(true);
+              setMoveIndex((i) => Math.min(currentMoves.length - 1, i + 1));
+            }}
+            disabled={moveIndex >= currentMoves.length - 1}
             title="Další tah"
           >
             ▶
           </Pill>
           <Pill
             square
-            onClick={() => setMoveIndex(variant.moves.length - 1)}
-            disabled={moveIndex >= variant.moves.length - 1}
+            onClick={() => jumpMoveIndex(currentMoves.length - 1)}
+            disabled={moveIndex >= currentMoves.length - 1}
             title="Na konec"
           >
             ⏭
@@ -678,8 +788,8 @@ export function Index() {
         </div>
       )}
 
-      {/* TABS (study only) */}
-      {mode === "study" && (
+      {/* TABS — shown in study and games modes (not practice) */}
+      {(mode === "study" || mode === "games") && (
         <section className="surface" style={{ padding: 0, marginBottom: 16 }}>
           <div
             style={{
@@ -710,38 +820,83 @@ export function Index() {
           <div style={{ padding: "16px 18px", minHeight: 120 }}>
             {tab === "strategy" && (
               <div>
-                <h3
-                  className="font-display"
-                  style={{ margin: "0 0 6px", fontSize: 18 }}
-                >
-                  {variant.name}{" "}
-                  <span
-                    style={{
-                      fontFamily: "Noto Serif, Georgia, serif",
-                      color: "var(--accent)",
-                      fontSize: 14,
-                      marginLeft: 4,
-                    }}
-                  >
-                    {variant.zh}
-                  </span>
-                </h3>
-                <p
-                  style={{
-                    margin: 0,
-                    color: "var(--text-soft)",
-                    fontSize: 16,
-                    lineHeight: 1.55,
-                  }}
-                >
-                  {variant.strategy}
-                </p>
+                {mode === "games" ? (
+                  <>
+                    <h3
+                      className="font-display"
+                      style={{ margin: "0 0 6px", fontSize: 18 }}
+                    >
+                      {selectedGame.title}
+                    </h3>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "var(--text-muted)",
+                        marginBottom: 10,
+                      }}
+                    >
+                      {selectedGame.event}
+                      {selectedGame.year > 0 ? ` · ${selectedGame.year}` : ""}{" "}
+                      · {selectedGame.red} (červený) vs. {selectedGame.black} (černý)
+                    </div>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "var(--text-soft)",
+                        fontSize: 16,
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {selectedGame.description}
+                    </p>
+                    <p
+                      style={{
+                        marginTop: 12,
+                        marginBottom: 0,
+                        fontSize: 13,
+                        color: "var(--accent)",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Výsledek: {selectedGame.result}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h3
+                      className="font-display"
+                      style={{ margin: "0 0 6px", fontSize: 18 }}
+                    >
+                      {variant.name}{" "}
+                      <span
+                        style={{
+                          fontFamily: "Noto Serif, Georgia, serif",
+                          color: "var(--accent)",
+                          fontSize: 14,
+                          marginLeft: 4,
+                        }}
+                      >
+                        {variant.zh}
+                      </span>
+                    </h3>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "var(--text-soft)",
+                        fontSize: 16,
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {variant.strategy}
+                    </p>
+                  </>
+                )}
               </div>
             )}
 
             {tab === "history" && (
               <div>
-                {variant.moves.length === 0 ? (
+                {currentMoves.length === 0 ? (
                   <p style={{ color: "var(--text-muted)" }}>Žádné tahy.</p>
                 ) : (
                   <div
@@ -751,12 +906,12 @@ export function Index() {
                       gap: 6,
                     }}
                   >
-                    {variant.moves.map((_m, i) => (
+                    {currentMoves.map((_m, i) => (
                       <MoveToken
                         key={i}
                         index={i}
                         active={i === moveIndex}
-                        onClick={() => setMoveIndex(i)}
+                        onClick={() => jumpMoveIndex(i)}
                       />
                     ))}
                   </div>
@@ -810,7 +965,7 @@ export function Index() {
                       }}
                     >
                       {(() => {
-                        const pre = applyMovesUpTo(variant.moves, moveIndex - 1);
+                        const pre = applyMovesUpTo(currentMoves, moveIndex - 1);
                         const p =
                           pre[currentMove.from[0]][currentMove.from[1]];
                         if (!p) return "?";
@@ -829,7 +984,7 @@ export function Index() {
                         {moveLabel(moveIndex)} ·{" "}
                         {(() => {
                           const pre = applyMovesUpTo(
-                            variant.moves,
+                            currentMoves,
                             moveIndex - 1,
                           );
                           const p =
@@ -869,7 +1024,9 @@ export function Index() {
       >
         {mode === "pieces"
           ? "Xiangqi · 7 figur, 1 kvíz"
-          : `${opening.name} · ${variant.name}`}
+          : mode === "games"
+            ? `${selectedGame.title}${selectedGame.year > 0 ? " · " + selectedGame.year : ""}`
+            : `${opening.name} · ${variant.name}`}
       </footer>
     </div>
   );

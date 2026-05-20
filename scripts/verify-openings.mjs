@@ -9,26 +9,24 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const tsSource = readFileSync(
-  join(__dirname, "..", "src", "data", "openings.ts"),
-  "utf8",
-);
 
-// Extract the OPENINGS array literal — everything between the leading
-// `export const OPENINGS: Opening[] = ` and the trailing `;`.
-const startMarker = "export const OPENINGS: Opening[] = ";
-const startIdx = tsSource.indexOf(startMarker);
-if (startIdx < 0) {
-  console.error("Could not find OPENINGS export");
-  process.exit(1);
+function extractExport(filePath, marker) {
+  const src = readFileSync(filePath, "utf8");
+  const i = src.indexOf(marker);
+  if (i < 0) throw new Error(`Marker "${marker}" not found in ${filePath}`);
+  let rest = src.slice(i + marker.length).trimEnd();
+  if (rest.endsWith(";")) rest = rest.slice(0, -1);
+  return eval("(" + rest + ")");
 }
-const arrayLiteral = tsSource.slice(startIdx + startMarker.length).trimEnd();
-// strip trailing semicolon
-const literal = arrayLiteral.endsWith(";")
-  ? arrayLiteral.slice(0, -1)
-  : arrayLiteral;
-// Evaluate as JS (the literal contains no type annotations inside the array)
-const OPENINGS = eval("(" + literal + ")");
+
+const OPENINGS = extractExport(
+  join(__dirname, "..", "src", "data", "openings.ts"),
+  "export const OPENINGS: Opening[] = ",
+);
+const GAMES = extractExport(
+  join(__dirname, "..", "src", "data", "games.ts"),
+  "export const GAMES: Game[] = ",
+);
 
 const ROWS = 10;
 const COLS = 9;
@@ -181,43 +179,54 @@ function validateMove(board, moveIndex, move) {
 
 let totalMoves = 0;
 let totalVariants = 0;
+let totalGames = 0;
 let errors = 0;
 
+function walk(label, moves) {
+  const board = initialBoard();
+  moves.forEach((m, idx) => {
+    totalMoves++;
+    const err = validateMove(board, idx, m);
+    if (err) {
+      console.error(
+        `❌ ${label} move ${idx + 1} [${m.from}]→[${m.to}]: ${err}`,
+      );
+      errors++;
+    }
+    const [fr, fc] = m.from;
+    const [tr, tc] = m.to;
+    board[tr][tc] = board[fr][fc];
+    board[fr][fc] = null;
+  });
+}
+
+// Openings: every variant must have exactly 12 moves
 for (const opening of OPENINGS) {
   for (const variant of opening.variants) {
     totalVariants++;
-    const board = initialBoard();
     if (variant.moves.length !== 12) {
       console.error(
         `❌ ${opening.id}/${variant.id}: ${variant.moves.length} moves, expected 12`,
       );
       errors++;
     }
-    variant.moves.forEach((m, idx) => {
-      totalMoves++;
-      const err = validateMove(board, idx, m);
-      if (err) {
-        console.error(
-          `❌ ${opening.id}/${variant.id} move ${idx + 1} [${m.from}]→[${m.to}]: ${err}`,
-        );
-        errors++;
-      }
-      // Apply the move regardless to keep tracing the position
-      const [fr, fc] = m.from;
-      const [tr, tc] = m.to;
-      board[tr][tc] = board[fr][fc];
-      board[fr][fc] = null;
-    });
+    walk(`${opening.id}/${variant.id}`, variant.moves);
   }
+}
+
+// Games: variable length, just validate legality
+for (const game of GAMES) {
+  totalGames++;
+  walk(`game/${game.id}`, game.moves);
 }
 
 if (errors === 0) {
   console.log(
-    `✅ All ${totalMoves} moves across ${totalVariants} variants validated.`,
+    `✅ All ${totalMoves} moves across ${totalVariants} variants and ${totalGames} games validated.`,
   );
 } else {
   console.log(
-    `\n❌ ${errors} errors across ${totalMoves} moves / ${totalVariants} variants.`,
+    `\n❌ ${errors} errors across ${totalMoves} moves / ${totalVariants} variants / ${totalGames} games.`,
   );
   process.exit(1);
 }

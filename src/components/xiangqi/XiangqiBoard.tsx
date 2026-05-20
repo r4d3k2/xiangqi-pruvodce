@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Board, Coord } from "../../lib/xiangqi";
+import type { Board, Coord, TrackedPiece } from "../../lib/xiangqi";
 import { COLS, ROWS } from "../../lib/xiangqi";
 import { pieceChar } from "../../data/pieces";
 import { PieceIcon } from "./PieceIcons";
@@ -7,7 +7,12 @@ import { PieceIcon } from "./PieceIcons";
 export type PieceDisplay = "char" | "icon";
 
 interface XiangqiBoardProps {
+  /** Board grid (for click hit-detection and as fallback piece source) */
   board: Board;
+  /** Tracked pieces — when provided, used for keyed rendering with animation */
+  pieces?: TrackedPiece[];
+  /** Whether piece transforms should transition smoothly (true) or snap (false) */
+  animate?: boolean;
   flipped?: boolean;
   pieceDisplay?: PieceDisplay;
   fromHighlight?: Coord | null;
@@ -30,6 +35,9 @@ const PIECE_INNER_R = 17;
 const PIECE_RING_R = 15.5;
 const PIECE_FONT_FAMILY =
   '"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif';
+
+const PIECE_TRANSITION_ON = "transform 300ms ease-out";
+const PIECE_TRANSITION_OFF = "none";
 
 function intersection(row: number, col: number, flipped: boolean) {
   const r = flipped ? ROWS - 1 - row : row;
@@ -63,8 +71,32 @@ function CornerTicks({ x, y }: { x: number; y: number }) {
   );
 }
 
+// Fall-back: when `pieces` aren't supplied, synthesize an unstable list
+// from the board grid. Used by callers (e.g. PieceCard mini-board) that
+// don't need animation.
+function piecesFromBoard(board: Board): TrackedPiece[] {
+  const arr: TrackedPiece[] = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = board[r][c];
+      if (cell) {
+        arr.push({
+          id: `${cell.side[0]}${cell.type}@${r}-${c}`,
+          type: cell.type,
+          side: cell.side,
+          row: r,
+          col: c,
+        });
+      }
+    }
+  }
+  return arr;
+}
+
 export function XiangqiBoard({
   board,
+  pieces,
+  animate = true,
   flipped = false,
   pieceDisplay = "char",
   fromHighlight = null,
@@ -81,12 +113,16 @@ export function XiangqiBoard({
   }, [flipped]);
 
   const rankLabels = useMemo(() => {
-    // Rows visually top→bottom; default (red bottom): row 0 = "10" .. row 9 = "1"
-    // Flipped: row 0 → "1" .. row 9 → "10"
     return Array.from({ length: ROWS }, (_, r) =>
       flipped ? `${r + 1}` : `${ROWS - r}`,
     );
   }, [flipped]);
+
+  // Use tracked pieces when available (animatable); otherwise derive from grid.
+  const renderedPieces = useMemo(
+    () => pieces ?? piecesFromBoard(board),
+    [pieces, board],
+  );
 
   const cannonMarks: Coord[] = [
     { row: 2, col: 1 },
@@ -97,24 +133,14 @@ export function XiangqiBoard({
   const soldierMarks: Coord[] = [];
   for (const r of [3, 6]) {
     for (const c of [0, 2, 4, 6, 8]) {
-      // Edge soldiers have only 3 brackets — we still render full to keep simple
       soldierMarks.push({ row: r, col: c });
     }
   }
 
-  const isHighlight = (kind: "from" | "to" | "sel" | "hint" | "err", row: number, col: number) => {
-    const c =
-      kind === "from"
-        ? fromHighlight
-        : kind === "to"
-          ? toHighlight
-          : kind === "sel"
-            ? selectedSquare
-            : kind === "hint"
-              ? hintSquare
-              : errorSquare;
-    return c && c.row === row && c.col === col;
-  };
+  const at = (coord: Coord | null, r: number, c: number) =>
+    !!coord && coord.row === r && coord.col === c;
+
+  const transitionStyle = animate ? PIECE_TRANSITION_ON : PIECE_TRANSITION_OFF;
 
   return (
     <div className="xq-board-wrap" style={{ width: "100%" }}>
@@ -258,12 +284,12 @@ export function XiangqiBoard({
           return <CornerTicks key={`mk${i}`} x={x} y={y} />;
         })}
 
-        {/* Highlights: from / to / sel / hint / err */}
+        {/* Highlights: from / to / hint (do not depend on piece identity) */}
         {Array.from({ length: ROWS }).map((_, r) =>
           Array.from({ length: COLS }).map((__, c) => {
             const { x, y } = intersection(r, c, flipped);
             const els: React.ReactNode[] = [];
-            if (isHighlight("from", r, c)) {
+            if (at(fromHighlight, r, c)) {
               els.push(
                 <circle
                   key={`fh${r}-${c}`}
@@ -276,7 +302,7 @@ export function XiangqiBoard({
                 />,
               );
             }
-            if (isHighlight("to", r, c)) {
+            if (at(toHighlight, r, c)) {
               els.push(
                 <circle
                   key={`th${r}-${c}`}
@@ -289,7 +315,7 @@ export function XiangqiBoard({
                 />,
               );
             }
-            if (isHighlight("hint", r, c)) {
+            if (at(hintSquare, r, c)) {
               els.push(
                 <circle
                   key={`hi${r}-${c}`}
@@ -303,91 +329,102 @@ export function XiangqiBoard({
                 />,
               );
             }
-            return <g key={`hl${r}-${c}`}>{els}</g>;
+            return els.length ? <g key={`hl${r}-${c}`}>{els}</g> : null;
           }),
         )}
 
-        {/* Pieces & click targets */}
-        {board.map((row, r) =>
-          row.map((piece, c) => {
-            const { x, y } = intersection(r, c, flipped);
-            const selected = isHighlight("sel", r, c);
-            const errored = isHighlight("err", r, c);
-            const clickable = !!onCellClick;
-            return (
-              <g
-                key={`p${r}-${c}`}
-                style={{ cursor: clickable ? "pointer" : "default" }}
-                onClick={onCellClick ? () => onCellClick(r, c) : undefined}
-              >
-                {/* invisible hit area */}
+        {/* Click hit targets — separate from pieces so click detection works
+            even on empty squares (needed in practice mode for "move here"). */}
+        {onCellClick &&
+          Array.from({ length: ROWS }).map((_, r) =>
+            Array.from({ length: COLS }).map((__, c) => {
+              const { x, y } = intersection(r, c, flipped);
+              return (
                 <rect
+                  key={`hit${r}-${c}`}
                   x={x - CELL / 2}
                   y={y - CELL / 2}
                   width={CELL}
                   height={CELL}
                   fill="transparent"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => onCellClick(r, c)}
                 />
-                {piece && (
-                  <g
-                    className={errored ? "xq-shake" : undefined}
-                    transform={selected ? `translate(${x},${y}) scale(1.08)` : `translate(${x},${y})`}
-                    style={{ transition: "transform 0.18s ease" }}
+              );
+            }),
+          )}
+
+        {/* Pieces — rendered with stable keys to enable CSS transitions */}
+        {renderedPieces.map((piece) => {
+          const { x, y } = intersection(piece.row, piece.col, flipped);
+          const selected = at(selectedSquare, piece.row, piece.col);
+          const errored = at(errorSquare, piece.row, piece.col);
+          return (
+            <g
+              key={piece.id}
+              transform={`translate(${x},${y})`}
+              style={{ transition: transitionStyle }}
+            >
+              <g
+                className={errored ? "xq-shake" : undefined}
+                transform={selected ? "scale(1.08)" : undefined}
+                style={{ transition: "transform 0.18s ease" }}
+              >
+                {selected && (
+                  <circle
+                    r={PIECE_OUTER_R + 3}
+                    fill="none"
+                    stroke="#ffd277"
+                    strokeWidth={2}
+                  />
+                )}
+                <g filter="url(#pieceShadow)">
+                  <circle
+                    r={PIECE_OUTER_R}
+                    fill={`var(--piece-${piece.side}-outer)`}
+                  />
+                  <circle
+                    r={PIECE_INNER_R}
+                    fill={`var(--piece-${piece.side}-inner)`}
+                    stroke={`var(--piece-${piece.side}-outer)`}
+                    strokeWidth={1}
+                  />
+                  <circle
+                    r={PIECE_RING_R}
+                    fill="none"
+                    stroke={`var(--piece-${piece.side}-text)`}
+                    strokeOpacity={0.3}
+                    strokeWidth={1}
+                  />
+                </g>
+                {pieceDisplay === "char" ? (
+                  <text
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontFamily={PIECE_FONT_FAMILY}
+                    fontWeight={900}
+                    fontSize={19}
+                    letterSpacing="-0.5"
+                    fill={`var(--piece-${piece.side}-text)`}
+                    style={{ pointerEvents: "none" }}
                   >
-                    {/* selected glow ring */}
-                    {selected && (
-                      <circle
-                        r={PIECE_OUTER_R + 3}
-                        fill="none"
-                        stroke="#ffd277"
-                        strokeWidth={2}
-                      />
-                    )}
-                    <g filter="url(#pieceShadow)">
-                      <circle
-                        r={PIECE_OUTER_R}
-                        fill={`var(--piece-${piece.side}-outer)`}
-                      />
-                      <circle
-                        r={PIECE_INNER_R}
-                        fill={`var(--piece-${piece.side}-inner)`}
-                        stroke={`var(--piece-${piece.side}-outer)`}
-                        strokeWidth={1}
-                      />
-                      <circle
-                        r={PIECE_RING_R}
-                        fill="none"
-                        stroke={`var(--piece-${piece.side}-text)`}
-                        strokeOpacity={0.3}
-                        strokeWidth={1}
-                      />
-                    </g>
-                    {pieceDisplay === "char" ? (
-                      <text
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fontFamily={PIECE_FONT_FAMILY}
-                        fontWeight={900}
-                        fontSize={19}
-                        letterSpacing="-0.5"
-                        fill={`var(--piece-${piece.side}-text)`}
-                      >
-                        {pieceChar(piece.type, piece.side)}
-                      </text>
-                    ) : (
-                      <g
-                        style={{ color: `var(--piece-${piece.side}-text)` }}
-                        transform="translate(-11,-11)"
-                      >
-                        <PieceIcon type={piece.type} />
-                      </g>
-                    )}
+                    {pieceChar(piece.type, piece.side)}
+                  </text>
+                ) : (
+                  <g
+                    style={{
+                      color: `var(--piece-${piece.side}-text)`,
+                      pointerEvents: "none",
+                    }}
+                    transform="translate(-11,-11)"
+                  >
+                    <PieceIcon type={piece.type} />
                   </g>
                 )}
               </g>
-            );
-          }),
-        )}
+            </g>
+          );
+        })}
 
         {/* File labels (a-i) below */}
         {fileLabels.map((l, i) => (
