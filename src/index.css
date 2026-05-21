@@ -36,6 +36,22 @@
   --highlight-from: rgba(255, 235, 180, 0.22);
   --highlight-to:   rgba(255, 196, 84, 0.55);
   --body-bg-glow: rgba(217, 164, 65, 0.06);
+
+  /* 3-level pill hierarchy: L1 strongest, L2 medium, L3 lightest.
+     Inactive state is shared across all three levels for consistency. */
+  --pill-bg-inactive: #2A1C0A;
+  --pill-border-inactive: #3A2A10;
+  --pill-text-inactive: #806040;
+  --pill-l1-active-bg: #3A2A10;
+  --pill-l1-active-border: #D4A84B;
+  --pill-l1-active-text: #D4A84B;
+  --pill-l2-active-bg: rgba(217, 164, 65, 0.15);
+  --pill-l2-active-border: rgba(217, 164, 65, 0.55);
+  --pill-l2-active-text: #D4A84B;
+  --pill-l3-active-bg: transparent;
+  --pill-l3-active-border: rgba(217, 164, 65, 0.40);
+  --pill-l3-active-text: #E0BA70;
+
   --shadow:
     rgba(0, 0, 0, 0.6) 0 14px 28px -8px,
     rgba(0, 0, 0, 0.4) 0 6px 12px -4px;
@@ -72,6 +88,21 @@
   --highlight-from: rgba(120, 60, 0, 0.18);
   --highlight-to:   rgba(255, 196, 84, 0.65);
   --body-bg-glow: rgba(154, 91, 29, 0.05);
+
+  /* 3-level pill hierarchy — light wood with brown accent */
+  --pill-bg-inactive: #efdcb3;
+  --pill-border-inactive: #c9a566;
+  --pill-text-inactive: #8a6a3c;
+  --pill-l1-active-bg: #9a5b1d;
+  --pill-l1-active-border: #7a4515;
+  --pill-l1-active-text: #fff5e0;
+  --pill-l2-active-bg: rgba(154, 91, 29, 0.18);
+  --pill-l2-active-border: #9a5b1d;
+  --pill-l2-active-text: #5a3a1c;
+  --pill-l3-active-bg: transparent;
+  --pill-l3-active-border: rgba(154, 91, 29, 0.55);
+  --pill-l3-active-text: #5a3a1c;
+
   --shadow:
     rgba(106, 70, 30, 0.18) 0 14px 28px -10px,
     rgba(106, 70, 30, 0.12) 0 6px 12px -4px;
@@ -108,6 +139,21 @@
   --highlight-from: rgba(15, 138, 138, 0.10);
   --highlight-to:   rgba(15, 138, 138, 0.50);
   --body-bg-glow: rgba(15, 138, 138, 0.03);
+
+  /* 3-level pill hierarchy — clean light with teal accent */
+  --pill-bg-inactive: #f0f2f5;
+  --pill-border-inactive: #d6dadf;
+  --pill-text-inactive: #8590a3;
+  --pill-l1-active-bg: #0f8a8a;
+  --pill-l1-active-border: #0f8a8a;
+  --pill-l1-active-text: #ffffff;
+  --pill-l2-active-bg: rgba(15, 138, 138, 0.12);
+  --pill-l2-active-border: #0f8a8a;
+  --pill-l2-active-text: #0f8a8a;
+  --pill-l3-active-bg: transparent;
+  --pill-l3-active-border: rgba(15, 138, 138, 0.55);
+  --pill-l3-active-text: #0f8a8a;
+
   --shadow:
     rgba(16, 22, 36, 0.10) 0 14px 28px -10px,
     rgba(16, 22, 36, 0.06) 0 6px 12px -4px;
@@ -144,6 +190,21 @@
   --highlight-from: rgba(169, 182, 204, 0.18);
   --highlight-to:   rgba(192, 210, 240, 0.55);
   --body-bg-glow: rgba(169, 182, 204, 0.05);
+
+  /* 3-level pill hierarchy — deep navy with silver accent */
+  --pill-bg-inactive: #1f2d4a;
+  --pill-border-inactive: #283856;
+  --pill-text-inactive: #7a86a0;
+  --pill-l1-active-bg: #34466a;
+  --pill-l1-active-border: #a9b6cc;
+  --pill-l1-active-text: #e6ecf6;
+  --pill-l2-active-bg: rgba(169, 182, 204, 0.18);
+  --pill-l2-active-border: #a9b6cc;
+  --pill-l2-active-text: #c4cee0;
+  --pill-l3-active-bg: transparent;
+  --pill-l3-active-border: rgba(169, 182, 204, 0.55);
+  --pill-l3-active-text: #c4cee0;
+
   --shadow:
     rgba(0, 0, 0, 0.55) 0 14px 28px -8px,
     rgba(0, 0, 0, 0.35) 0 6px 12px -4px;
@@ -227,9 +288,9 @@ button:focus-visible {
 }
 
 /* Pill — rounded button used throughout app.
-   High-contrast serif fonts (Playfair Display, Crimson Text) rendered the
-   capital "O" as a distorted oval at 15px. Switched to Noto Serif which
-   has more even stroke contrast, plus explicit antialiasing. */
+   Selection pills have a 3-level hierarchy (level 1 = mode tab, level 2 =
+   opening category, level 3 = specific variant), each with a distinct
+   active intensity. All levels share the same inactive style. */
 .pill {
   display: inline-flex;
   align-items: center;
@@ -241,9 +302,9 @@ button:focus-visible {
   line-height: 1;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-soft);
+  border: 1px solid var(--pill-border-inactive);
+  background: var(--pill-bg-inactive);
+  color: var(--pill-text-inactive);
   transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
     transform 0.18s ease;
   white-space: nowrap;
@@ -252,14 +313,40 @@ button:focus-visible {
 }
 
 .pill:hover {
-  border-color: var(--accent-border);
-  color: var(--text);
+  border-color: var(--pill-l2-active-border);
+  color: var(--pill-l2-active-text);
 }
 
-.pill.is-active {
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-  color: var(--accent);
+/* Level 1 — mode tabs (strongest highlight): solid background + bright text */
+.pill.is-l1.is-active {
+  background: var(--pill-l1-active-bg);
+  border-color: var(--pill-l1-active-border);
+  color: var(--pill-l1-active-text);
+  font-weight: 600;
+}
+
+/* Level 2 — opening category (medium highlight): tinted background + border */
+.pill.is-l2.is-active {
+  background: var(--pill-l2-active-bg);
+  border-color: var(--pill-l2-active-border);
+  color: var(--pill-l2-active-text);
+  font-weight: 600;
+}
+
+/* Level 3 — variant (lightest highlight): just a stronger border + text */
+.pill.is-l3.is-active {
+  background: var(--pill-l3-active-bg);
+  border-color: var(--pill-l3-active-border);
+  color: var(--pill-l3-active-text);
+}
+
+/* Fallback for legacy pills without a level: keep them at L1 styling
+   when active so action buttons (Nápověda, Doporučit, etc.) still
+   visibly toggle. */
+.pill.is-active:not(.is-l1):not(.is-l2):not(.is-l3) {
+  background: var(--pill-l1-active-bg);
+  border-color: var(--pill-l1-active-border);
+  color: var(--pill-l1-active-text);
 }
 
 .pill.is-ghost {
@@ -275,6 +362,15 @@ button:focus-visible {
 .pill:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* Small Chinese-character icon shown before opening names (level 2 pills). */
+.pill-zh-icon {
+  font-family: '"Noto Serif SC", "SimSun", "KaiTi", Noto Serif, Georgia, serif';
+  font-weight: 700;
+  font-size: 13px;
+  opacity: 0.85;
+  margin-right: 2px;
 }
 
 /* Tabs — same reasoning as pills: Noto Serif renders cleaner at 15px. */

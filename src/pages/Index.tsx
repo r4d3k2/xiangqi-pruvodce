@@ -37,6 +37,16 @@ type Tab = "strategy" | "history" | "move";
 const OPPONENT_DELAY_MS = 700;
 const ERROR_FLASH_MS = 420;
 
+// Single-character Chinese icon shown before each opening name in the
+// level-2 (opening category) selector pills.
+const OPENING_ICON: Record<string, string> = {
+  "central-cannon": "炮",   // Cannon — Centrální kanon
+  "horse-opening": "馬",    // Horse — Koňská hra
+  "elephant-opening": "象", // Elephant — Slonova hra
+  "sage-opening": "兵",     // Pawn — Zahájení mudrce
+  "rook-opening": "車",     // Rook — Zahájení vozu
+};
+
 export function Index() {
   const [mode, setMode] = useState<Mode>("study");
   const [openingId, setOpeningId] = useState(OPENINGS[0].id);
@@ -316,22 +326,32 @@ export function Index() {
           flexWrap: "wrap",
         }}
       >
-        <Pill active={mode === "study"} onClick={() => setMode("study")}>
+        <Pill
+          level={1}
+          active={mode === "study"}
+          onClick={() => setMode("study")}
+        >
           <span aria-hidden>📖</span> Studovat
         </Pill>
         <Pill
+          level={1}
           active={mode === "practice"}
           onClick={() => setMode("practice")}
         >
           <span aria-hidden>🎯</span> Procvičovat
         </Pill>
         <Pill
+          level={1}
           active={mode === "pieces"}
           onClick={() => setMode("pieces")}
         >
           <span aria-hidden>🀄</span> Figury
         </Pill>
-        <Pill active={mode === "games"} onClick={() => setMode("games")}>
+        <Pill
+          level={1}
+          active={mode === "games"}
+          onClick={() => setMode("games")}
+        >
           <span aria-hidden>📜</span> Partie
         </Pill>
       </nav>
@@ -482,12 +502,19 @@ export function Index() {
               (v) => progress[v.id]?.stars ?? 0,
             );
             const maxStar = Math.max(...variantStars, 0);
+            const icon = OPENING_ICON[o.id];
             return (
               <Pill
                 key={o.id}
+                level={2}
                 active={o.id === opening.id}
                 onClick={() => selectOpening(o.id)}
               >
+                {icon && (
+                  <span className="pill-zh-icon" aria-hidden>
+                    {icon}
+                  </span>
+                )}
                 {o.name}
                 {mode === "practice" && maxStar > 0 && (
                   <span
@@ -517,8 +544,8 @@ export function Index() {
             return (
               <Pill
                 key={v.id}
+                level={3}
                 active={v.id === variant.id}
-                ghost
                 onClick={() => selectVariant(v.id)}
               >
                 {v.name}
