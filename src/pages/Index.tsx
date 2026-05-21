@@ -29,10 +29,12 @@ import { ResultCard } from "../components/xiangqi/ResultCard";
 import { ThemeSwitcher } from "../components/xiangqi/ThemeSwitcher";
 import { PieceCard } from "../components/xiangqi/PieceCard";
 import { PieceQuiz } from "../components/xiangqi/PieceQuiz";
+import { CharacterFlashcards } from "../components/xiangqi/CharacterFlashcards";
 import { PIECE_TYPES } from "../data/pieces";
 
 type Mode = "study" | "practice" | "pieces" | "games";
 type Tab = "strategy" | "history" | "move";
+type FigurySub = "znaky" | "kviz" | "prehled";
 
 const OPPONENT_DELAY_MS = 700;
 const ERROR_FLASH_MS = 420;
@@ -70,6 +72,9 @@ export function Index() {
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
+
+  // Sub-section inside the Figury mode (default to Znaky — pedagogical order).
+  const [figurySub, setFigurySub] = useState<FigurySub>("znaky");
 
   // Cancellable scheduled opponent move
   const oppTimer = useRef<number | null>(null);
@@ -373,44 +378,101 @@ export function Index() {
       {/* ============= PIECES MODE ============= */}
       {mode === "pieces" && (
         <>
-          <section
+          {/* Sub-navigation: pedagogical order — learn → test → reference */}
+          <nav
             style={{
-              marginBottom: 18,
-              textAlign: "center",
-              color: "var(--text-soft)",
-              fontSize: 15,
-              lineHeight: 1.5,
+              display: "flex",
+              gap: 6,
+              justifyContent: "center",
+              marginBottom: 14,
+              flexWrap: "wrap",
             }}
           >
-            Sedm typů figur čínských šachů. Klepni si nahoře na téma, otoč
-            si desku, nebo si vyzkoušej kvíz dole.
-          </section>
+            <Pill
+              level={3}
+              active={figurySub === "znaky"}
+              onClick={() => setFigurySub("znaky")}
+            >
+              <span aria-hidden>📝</span> Znaky
+            </Pill>
+            <Pill
+              level={3}
+              active={figurySub === "kviz"}
+              onClick={() => setFigurySub("kviz")}
+            >
+              <span aria-hidden>🎯</span> Kvíz
+            </Pill>
+            <Pill
+              level={3}
+              active={figurySub === "prehled"}
+              onClick={() => setFigurySub("prehled")}
+            >
+              <span aria-hidden>📖</span> Přehled
+            </Pill>
+          </nav>
 
-          <section
-            style={{
-              display: "grid",
-              gap: 12,
-              gridTemplateColumns: "1fr",
-              marginBottom: 20,
-            }}
-          >
-            {PIECE_TYPES.map((t) => (
-              <PieceCard key={t} type={t} />
-            ))}
-          </section>
+          {figurySub === "znaky" && (
+            <>
+              <p
+                style={{
+                  margin: "0 0 14px",
+                  textAlign: "center",
+                  color: "var(--text-soft)",
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                }}
+              >
+                Nauč se rozpoznat každou figuru podle čínského znaku.
+                Klepni na karty pro otočení.
+              </p>
+              <CharacterFlashcards />
+            </>
+          )}
 
-          <h2
-            className="font-display"
-            style={{
-              textAlign: "center",
-              fontSize: 20,
-              margin: "12px 0 12px",
-              color: "var(--text)",
-            }}
-          >
-            Kvíz · Poznej figuru
-          </h2>
-          <PieceQuiz />
+          {figurySub === "kviz" && (
+            <>
+              <h2
+                className="font-display"
+                style={{
+                  textAlign: "center",
+                  fontSize: 20,
+                  margin: "0 0 12px",
+                  color: "var(--text)",
+                }}
+              >
+                Poznej figuru
+              </h2>
+              <PieceQuiz />
+            </>
+          )}
+
+          {figurySub === "prehled" && (
+            <>
+              <p
+                style={{
+                  margin: "0 0 14px",
+                  textAlign: "center",
+                  color: "var(--text-soft)",
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                }}
+              >
+                Pravidla pohybu a omezení pro každou ze 7 figur.
+              </p>
+              <section
+                style={{
+                  display: "grid",
+                  gap: 12,
+                  gridTemplateColumns: "1fr",
+                  marginBottom: 8,
+                }}
+              >
+                {PIECE_TYPES.map((t) => (
+                  <PieceCard key={t} type={t} />
+                ))}
+              </section>
+            </>
+          )}
         </>
       )}
 

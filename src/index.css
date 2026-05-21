@@ -432,6 +432,41 @@ button:focus-visible {
   animation: xq-shake 0.35s ease;
 }
 
+/* 3D card-flip used by the Nauč se znaky flashcards.
+   Front face is the default; back face is rotated 180° on the Y axis. */
+.flip-card {
+  perspective: 600px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease;
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
 /* Header heading.
    Playfair Display is reserved for large display sizes (>= 18px) — at
    12px it has the same broken-O problem as the pills, so the eyebrow
