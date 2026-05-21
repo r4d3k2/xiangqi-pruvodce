@@ -109,7 +109,7 @@ function MiniPiece({
 function ForbiddenX({ cx, cy, size = 8 }: { cx: number; cy: number; size?: number }) {
   return (
     <g
-      stroke="var(--bad)"
+      stroke="var(--diagram-forbidden)"
       strokeWidth={1.8}
       strokeLinecap="round"
       transform={`translate(${cx}, ${cy})`}
@@ -167,42 +167,66 @@ function Diagram({
             strokeWidth={1}
           />
         ))}
-        {/* Vertical lines */}
-        {Array.from({ length: d.cols }, (_, c) => (
-          <line
-            key={`v${c}`}
-            x1={PAD + c * CELL}
-            y1={PAD}
-            x2={PAD + c * CELL}
-            y2={PAD + (d.rows - 1) * CELL}
-            stroke="var(--board-line)"
-            strokeWidth={1}
-          />
-        ))}
+        {/* Vertical lines — broken at the river (only edge cols continue) */}
+        {Array.from({ length: d.cols }, (_, c) => {
+          const x = PAD + c * CELL;
+          const yTop = PAD;
+          const yBot = PAD + (d.rows - 1) * CELL;
+          const isEdgeCol = c === 0 || c === d.cols - 1;
+          if (!d.river || isEdgeCol) {
+            return (
+              <line
+                key={`v${c}`}
+                x1={x}
+                y1={yTop}
+                x2={x}
+                y2={yBot}
+                stroke="var(--board-line)"
+                strokeWidth={1}
+              />
+            );
+          }
+          // Break the vertical at the river — afterRow is the last row of the
+          // upper side; the river spans from row `afterRow` to row `afterRow+1`.
+          const riverTop = PAD + d.river.afterRow * CELL;
+          const riverBot = PAD + (d.river.afterRow + 1) * CELL;
+          return (
+            <g key={`v${c}`}>
+              <line
+                x1={x}
+                y1={yTop}
+                x2={x}
+                y2={riverTop}
+                stroke="var(--board-line)"
+                strokeWidth={1}
+              />
+              <line
+                x1={x}
+                y1={riverBot}
+                x2={x}
+                y2={yBot}
+                stroke="var(--board-line)"
+                strokeWidth={1}
+              />
+            </g>
+          );
+        })}
 
-        {/* River */}
+        {/* River — text only, no grid lines crossing (vertical lines are
+            broken above; horizontal lines bound the river top + bottom). */}
         {d.river && (
-          <g>
-            <rect
-              x={PAD - 1}
-              y={PAD + (d.river.afterRow + 0.5) * CELL - 4}
-              width={(d.cols - 1) * CELL + 2}
-              height={8}
-              fill="var(--board-river-text)"
-              opacity={0.25}
-            />
-            <text
-              x={w / 2}
-              y={PAD + (d.river.afterRow + 0.5) * CELL + 4}
-              textAnchor="middle"
-              fontFamily="Noto Serif, Georgia, serif"
-              fontSize={10}
-              fill="var(--board-river-text)"
-              opacity={0.85}
-            >
-              楚 河 漢 界
-            </text>
-          </g>
+          <text
+            x={w / 2}
+            y={PAD + (d.river.afterRow + 0.5) * CELL + 4}
+            textAnchor="middle"
+            fontFamily="Noto Serif, Georgia, serif"
+            fontSize={9}
+            fill="var(--board-river-text)"
+            opacity={0.7}
+            letterSpacing={2}
+          >
+            楚 河 漢 界
+          </text>
         )}
 
         {/* Palace box + diagonals */}
@@ -235,7 +259,10 @@ function Diagram({
           />
         ))}
 
-        {/* Targets — arrows + endpoint markers */}
+        {/* Targets — arrows + endpoint markers.
+            Allowed (move) targets are GREEN; blocked targets are muted +
+            overlaid with a red X; forbidden are a red X only; captures
+            keep the red "capture" arrow + black silhouette + red X. */}
         {d.targets.map((t, i) => {
           const tx = PAD + t.col * CELL;
           const ty = PAD + t.row * CELL;
@@ -253,7 +280,7 @@ function Diagram({
                   y1={pieceY}
                   x2={tx}
                   y2={ty}
-                  stroke="var(--piece-red-outer)"
+                  stroke="var(--diagram-forbidden)"
                   strokeWidth={2}
                   opacity={0.9}
                   markerEnd="url(#captureArrow)"
@@ -267,10 +294,10 @@ function Diagram({
           const isBlocked = kind === "blocked";
           const lineColor = isBlocked
             ? "var(--text-muted)"
-            : "var(--piece-red-outer)";
+            : "var(--diagram-allowed)";
           const dotColor = isBlocked
             ? "var(--text-muted)"
-            : "var(--piece-red-outer)";
+            : "var(--diagram-allowed)";
           return (
             <g key={`t${i}`}>
               <line
@@ -281,14 +308,14 @@ function Diagram({
                 stroke={lineColor}
                 strokeWidth={1.4}
                 strokeDasharray="3 2"
-                opacity={isBlocked ? 0.6 : 0.85}
+                opacity={isBlocked ? 0.55 : 0.9}
               />
               <circle
                 cx={tx}
                 cy={ty}
                 r={5}
                 fill={dotColor}
-                opacity={isBlocked ? 0.55 : 0.9}
+                opacity={isBlocked ? 0.5 : 0.95}
               />
               {isBlocked && <ForbiddenX cx={tx} cy={ty} size={6} />}
             </g>
@@ -304,10 +331,10 @@ function Diagram({
                 y1={pieceY}
                 x2={PAD + d.secondPiece.col * CELL}
                 y2={PAD + d.secondPiece.row * CELL}
-                stroke="var(--bad)"
+                stroke="var(--diagram-forbidden)"
                 strokeWidth={1.6}
                 strokeDasharray="4 3"
-                opacity={0.7}
+                opacity={0.75}
               />
             )}
             <MiniPiece

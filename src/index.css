@@ -52,6 +52,10 @@
   --pill-l3-active-border: rgba(217, 164, 65, 0.40);
   --pill-l3-active-text: #E0BA70;
 
+  /* Diagram colors — green=allowed, red=forbidden (theme-adaptive). */
+  --diagram-allowed: #66BB6A;
+  --diagram-forbidden: #E27066;
+
   --shadow:
     rgba(0, 0, 0, 0.6) 0 14px 28px -8px,
     rgba(0, 0, 0, 0.4) 0 6px 12px -4px;
@@ -102,6 +106,10 @@
   --pill-l3-active-bg: transparent;
   --pill-l3-active-border: rgba(154, 91, 29, 0.55);
   --pill-l3-active-text: #5a3a1c;
+
+  /* Diagram colors */
+  --diagram-allowed: #3F8A3F;
+  --diagram-forbidden: #B83A2A;
 
   --shadow:
     rgba(106, 70, 30, 0.18) 0 14px 28px -10px,
@@ -154,6 +162,10 @@
   --pill-l3-active-border: rgba(15, 138, 138, 0.55);
   --pill-l3-active-text: #0f8a8a;
 
+  /* Diagram colors */
+  --diagram-allowed: #2E8B3D;
+  --diagram-forbidden: #C0392B;
+
   --shadow:
     rgba(16, 22, 36, 0.10) 0 14px 28px -10px,
     rgba(16, 22, 36, 0.06) 0 6px 12px -4px;
@@ -204,6 +216,10 @@
   --pill-l3-active-bg: transparent;
   --pill-l3-active-border: rgba(169, 182, 204, 0.55);
   --pill-l3-active-text: #c4cee0;
+
+  /* Diagram colors */
+  --diagram-allowed: #6DD080;
+  --diagram-forbidden: #E27066;
 
   --shadow:
     rgba(0, 0, 0, 0.55) 0 14px 28px -8px,

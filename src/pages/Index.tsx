@@ -1112,7 +1112,11 @@ export function Index() {
         }}
       >
         {mode === "pieces"
-          ? "Xiangqi · 7 figur, 1 kvíz"
+          ? figurySub === "znaky"
+            ? "14 znaků k naučení"
+            : figurySub === "kviz"
+              ? "10 otázek · Poznej figuru"
+              : "7 figur · pohyb & pravidla"
           : mode === "games"
             ? `${selectedGame.title}${selectedGame.year > 0 ? " · " + selectedGame.year : ""}`
             : `${opening.name} · ${variant.name}`}
