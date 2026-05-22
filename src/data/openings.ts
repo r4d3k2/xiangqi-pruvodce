@@ -188,7 +188,7 @@ export const OPENINGS: Opening[] = [
         name: "Protikanon s krytým vozem",
         zh: "反宮馬",
         strategy:
-          "Protikanon s krytým vozem (反宮馬 — „obrácený palácový kůň“) je houževnatá poziční odpověď na centrální kanon. Místo symetrické koňské zdi černý přesune pravý kanon na (2,5), kde kryje palácový bok, a teprve potom rozvíjí oba koně. Vzniká pevná, defenzivní formace s rozdělenou silou na obou křídlech — vůz na levém křídle je krytý kanonem a tvoří „protikanonový“ motiv.",
+          "Protikanon s krytým vozem (反宮馬 — „obrácený palácový kůň“) je houževnatá poziční odpověď na centrální kanon. Místo symetrické koňské zdi černý přesune pravý kanon na f8, kde kryje palácový bok, a teprve potom rozvíjí oba koně. Vzniká pevná, defenzivní formace s rozdělenou silou na obou křídlech — vůz na levém křídle je krytý kanonem a tvoří „protikanonový“ motiv.",
         moves: [
           {
             from: [7, 7],
@@ -200,7 +200,7 @@ export const OPENINGS: Opening[] = [
             from: [2, 7],
             to: [2, 5],
             comment:
-              "Klíčový tah! Černý kanon se posunuje na (2,5) — kryje palácový bok a tvoří motiv „obráceného paláce“.",
+              "Klíčový tah! Černý kanon se posunuje na f8 — kryje palácový bok a tvoří motiv „obráceného paláce“.",
           },
           {
             from: [9, 7],
@@ -466,7 +466,7 @@ export const OPENINGS: Opening[] = [
             from: [2, 7],
             to: [5, 7],
             comment:
-              "Aktivní protihrozba! Černý kanon skáče přes řeku na (5,7) — útočná demonstrace.",
+              "Aktivní protihrozba! Černý kanon skáče přes řeku na h5 — útočná demonstrace.",
           },
           {
             from: [9, 8],

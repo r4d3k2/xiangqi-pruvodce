@@ -167,7 +167,11 @@ export function Index() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant.id, selectedGame.id, mode, flipped]);
 
-  // Auto-play opponent moves in practice mode
+  // Auto-play opponent moves in practice mode. `flipped` is in the dep
+  // array so that toggling sides at moveIndex=-1 (where setMoveIndex(-1)
+  // is a no-op) still re-evaluates and schedules red's first move.
+  // We use a shorter delay (500 ms) at the start of the game for snappy
+  // feedback, and the normal delay between subsequent moves.
   useEffect(() => {
     if (mode !== "practice") return;
     if (done) return;
@@ -176,11 +180,12 @@ export function Index() {
     if (oppTimer.current) {
       clearTimeout(oppTimer.current);
     }
+    const delay = moveIndex < 0 ? 500 : OPPONENT_DELAY_MS;
     oppTimer.current = window.setTimeout(() => {
       setMoveIndex((i) => i + 1);
       setHintLevel(0);
       oppTimer.current = null;
-    }, OPPONENT_DELAY_MS);
+    }, delay);
     return () => {
       if (oppTimer.current) {
         clearTimeout(oppTimer.current);
@@ -188,7 +193,7 @@ export function Index() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, moveIndex, done, variant.id]);
+  }, [mode, moveIndex, done, variant.id, flipped]);
 
   // Mark done + persist progress when the last move is played
   useEffect(() => {

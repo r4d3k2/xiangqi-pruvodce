@@ -354,7 +354,10 @@ export function XiangqiBoard({
             }),
           )}
 
-        {/* Pieces — rendered with stable keys to enable CSS transitions */}
+        {/* Pieces — rendered with stable keys to enable CSS transitions.
+            pointer-events:none is critical so clicks on a piece pass through
+            to the hit-target rect below (otherwise pieces would absorb the
+            click and selection in practice mode would never trigger). */}
         {renderedPieces.map((piece) => {
           const { x, y } = intersection(piece.row, piece.col, flipped);
           const selected = at(selectedSquare, piece.row, piece.col);
@@ -363,7 +366,7 @@ export function XiangqiBoard({
             <g
               key={piece.id}
               transform={`translate(${x},${y})`}
-              style={{ transition: transitionStyle }}
+              style={{ transition: transitionStyle, pointerEvents: "none" }}
             >
               <g
                 className={errored ? "xq-shake" : undefined}

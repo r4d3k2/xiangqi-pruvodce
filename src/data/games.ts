@@ -79,7 +79,7 @@ export const GAMES: Game[] = [
         from: [6, 6],
         to: [5, 6],
         comment:
-          "Klíčový tah! Červený pěšák na lince g uvolňuje cestu pro pozdější skok koněm na (5,7) — strategická příprava.",
+          "Klíčový tah! Červený pěšák na lince g uvolňuje cestu pro pozdější skok koněm na h5 — strategická příprava.",
       },
       {
         from: [3, 6],
@@ -91,7 +91,7 @@ export const GAMES: Game[] = [
         from: [7, 6],
         to: [5, 7],
         comment:
-          "Brilantní! Červený kůň skáče na (5,7) (přes uvolněné (6,6)), hrozí pěšákovi na (3,8). Aktivní útok.",
+          "Brilantní! Červený kůň skáče na h5 (přes uvolněné g4), hrozí pěšákovi na i7. Aktivní útok.",
       },
       {
         from: [3, 8],
@@ -103,7 +103,7 @@ export const GAMES: Game[] = [
         from: [5, 7],
         to: [3, 8],
         comment:
-          "Kůň proniká na (3,8) — nyní hrozí černému koni na (2,6)! Hu Ronghua vede ostrý útok.",
+          "Kůň proniká na i7 — nyní hrozí černému koni na g8! Hu Ronghua vede ostrý útok.",
       },
       {
         from: [2, 6],
@@ -139,7 +139,7 @@ export const GAMES: Game[] = [
         from: [7, 4],
         to: [4, 4],
         comment:
-          "Klíčový tah! Červený kanon přeskočí přes vlastního pěšáka na (6,4) a bere centrálního černého pěšáka. Materiální zisk!",
+          "Klíčový tah! Červený kanon přeskočí přes vlastního pěšáka na e4 a bere centrálního černého pěšáka. Materiální zisk!",
       },
       {
         from: [1, 1],
@@ -157,7 +157,7 @@ export const GAMES: Game[] = [
         from: [1, 0],
         to: [2, 0],
         comment:
-          "Černý vůz na (2,0) — pokouší se aktivovat boční útok.",
+          "Černý vůz na a8 — pokouší se aktivovat boční útok.",
       },
       {
         from: [4, 3],
@@ -175,7 +175,7 @@ export const GAMES: Game[] = [
         from: [4, 0],
         to: [1, 0],
         comment:
-          "DECISIVNÍ! Červený kanon přeskočí přes černého pěšáka na (3,0) jako lafetu a bere černého vozu na (1,0)! Hu Ronghua získává druhou těžkou figuru — rozhodující materiální převaha.",
+          "DECISIVNÍ! Červený kanon přeskočí přes černého pěšáka na a7 jako lafetu a bere černého vozu na a9! Hu Ronghua získává druhou těžkou figuru — rozhodující materiální převaha.",
       },
       {
         from: [0, 8],
@@ -297,7 +297,7 @@ export const GAMES: Game[] = [
         from: [3, 3],
         to: [3, 0],
         comment:
-          "Červený vůz bere černého pěšáka na (3,0)! Druhý materiální zisk.",
+          "Červený vůz bere černého pěšáka na a7! Druhý materiální zisk.",
       },
       {
         from: [1, 3],
@@ -309,7 +309,7 @@ export const GAMES: Game[] = [
         from: [3, 0],
         to: [2, 0],
         comment:
-          "Lü Qin moudře stahuje vůz na (2,0) — chrání zisk a uniká vlastnímu vozu před výměnou.",
+          "Lü Qin moudře stahuje vůz na a8 — chrání zisk a uniká vlastnímu vozu před výměnou.",
       },
       {
         from: [3, 3],
@@ -356,7 +356,7 @@ export const GAMES: Game[] = [
         from: [7, 4],
         to: [4, 4],
         comment:
-          "PŘESKOK! Červený kanon přeskočí přes vlastního pěšáka na (6,4) a bere černého pěšáka. Klíčový taktický motiv — zapamatuj si ho.",
+          "PŘESKOK! Červený kanon přeskočí přes vlastního pěšáka na e4 a bere černého pěšáka. Klíčový taktický motiv — zapamatuj si ho.",
       },
       {
         from: [0, 7],
